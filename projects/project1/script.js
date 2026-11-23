@@ -1,9 +1,19 @@
-let font;
+
+let font1;
+let font2;
+let font3;
+let font4;
+
 let fontPath = "MarseilleFreeRegular-MAXEB.ttf";
+let fontPath2 = "Pixellettersfull-BnJ5.ttf";
+let fontPath3 = "PlayfulTime-BLBB8.ttf";
+let fontPath4 = "RoughenCornerRegular-7RjV.ttf";
+
+let current_font = 1;
 
 let frame_counter = 0;
 let blinker_length = 2;
-let typed_size = 50;
+let typed_size = 100;
 let typed_letters = [""];
 let x = 0;
 let y = 0;
@@ -22,13 +32,16 @@ let rotation = 0;
 let mouse_clicked = 0;
 let color_changed = 0;
 
-
 let last_processed_size_position = -1;
+
 
 async function setup() {
 
-    // LOAD FONT 
-    font = await loadFont(fontPath);
+    // LOAD FONTS
+    font1 = await loadFont(fontPath);
+    font2 = await loadFont(fontPath2);
+    font3 = await loadFont(fontPath3);
+    font4 = await loadFont(fontPath4);
 
     createCanvas(windowWidth, windowHeight);
 
@@ -46,10 +59,23 @@ function draw() {
         console.log(frame_counter);
     }
 
- 
+
     // COLORS
     background(background_farbe);
-    textFont(font);
+
+    // SELECT CURRENT FONT
+    if (current_font == 1) {
+        textFont(font1);
+    }
+    else if (current_font == 2) {
+        textFont(font2);
+    }
+    else if (current_font == 3) {
+        textFont(font3);
+    }
+    else if (current_font == 4) {
+        textFont(font4);
+    }
 
 
     let text_a = typed_letters.join("");
@@ -60,8 +86,8 @@ function draw() {
     let yellow_position = text_a.lastIndexOf("yellow");
     let green_position = text_a.lastIndexOf("green");
     let purple_position = text_a.lastIndexOf("purple");
-	let orange_position = text_a.lastIndexOf("orange");
-	let pink_position = text_a.lastIndexOf("pink");
+    let orange_position = text_a.lastIndexOf("orange");
+    let pink_position = text_a.lastIndexOf("pink");
 
     let last_color_position = Math.max(
         white_position,
@@ -70,8 +96,8 @@ function draw() {
         yellow_position,
         green_position,
         purple_position,
-			orange_position,
-			pink_position
+        orange_position,
+        pink_position
     );
 
 
@@ -100,22 +126,19 @@ function draw() {
         aktuelle_farbe = '#B75FCB';
         color_changed++;
     }
-	 else if (last_color_position == orange_position && orange_position != -1) {
+    else if (last_color_position == orange_position && orange_position != -1) {
         aktuelle_farbe = '#FFB347';
         color_changed++;
-    } 
-
-	 else if (last_color_position == pink_position && pink_position != -1) {
+    }
+    else if (last_color_position == pink_position && pink_position != -1) {
         aktuelle_farbe = '#ffd1dc';
         color_changed++;
-    } 
+    }
 
 
-    //check if bigger or smaller was typed
+    // CHECK IF BIGGER OR SMALLER WAS TYPED
     let bigger_position = text_a.lastIndexOf("bigger");
     let smaller_position = text_a.lastIndexOf("smaller");
-
-
 
     let last_size_position = Math.max(
         bigger_position,
@@ -144,8 +167,6 @@ function draw() {
 
 
     // BIG BACKGROUND TEXT
-
-    // Shows the last 3 letters
     let text_big = typed_letters[current_line].slice(-3);
 
     push();
@@ -162,7 +183,6 @@ function draw() {
 
 
     // NORMAL LETTERS
-
     translate(windowWidth / 2, windowHeight / 2);
     rotate(rotation);
 
@@ -186,16 +206,12 @@ function draw() {
 
 
     // CURSOR POSITION
-
-    // Calculate width of current string
     textSize(typed_size);
 
     let cursor_x = textWidth(typed_letters[current_line]);
 
-    // Calculate letter height
     let letter_height = textAscent() + textDescent();
 
-    // Draw cursor
     rectMode(CORNER);
 
     if (frame_counter % blinker_length == 0) {
@@ -210,8 +226,7 @@ function draw() {
     }
 
 
-    // CLICK 
-
+    // CLICK
     if (frame_counter >= 15 && mouse_clicked < 2) {
 
         textSize(20);
@@ -220,12 +235,11 @@ function draw() {
     }
 
 
-    // WRITE COLOR 
-
+    // WRITE COLOR
     if (frame_counter >= 8 && color_changed < 2) {
 
         textSize(20);
-        text("try writing a color!", 50, 2*typed_size + 10);
+        text("try writing a color!", 50, 2 * typed_size + 10);
 
     }
 
@@ -236,25 +250,38 @@ function draw() {
 
 function keyTyped() {
 
-    // USE THE SAME FONT AND SIZE AS THE DRAWN TEXT
-    textFont(font);
+    // USE THE CURRENT FONT AND SIZE
+    if (current_font == 1) {
+        textFont(font1);
+    }
+    else if (current_font == 2) {
+        textFont(font2);
+    }
+    else if (current_font == 3) {
+        textFont(font3);
+    }
+    else if (current_font == 4) {
+        textFont(font4);
+    }
+
     textSize(typed_size);
 
-    if (textWidth(typed_letters[current_line] + key) > windowWidth/2 - random_x[current_line]) {
+    if (textWidth(typed_letters[current_line] + key) > windowWidth / 2 - random_x[current_line]) {
 
         current_line++;
 
         typed_letters.push("");
 
-        random_x.push(random(-windowWidth/2, windowWidth/2-typed_size));
+        random_x.push(random(-windowWidth / 2, windowWidth / 2 - typed_size));
 
-        random_y.push(random(-windowHeight/2+typed_size, windowHeight/2));
+        random_y.push(random(-windowHeight / 2 + typed_size, windowHeight / 2));
 
     }
 
     typed_letters[current_line] += key;
 
     return false;
+
 }
 
 
@@ -280,16 +307,25 @@ function keyPressed() {
 
     }
 
-    /*if(key == "Enter") {
-        rotation = rotation +1;
+
+    // SWITCH BETWEEN FOUR FONTS
+    if (key == "Enter") {
+
+        current_font++;
+
+        if (current_font > 4) {
+            current_font = 1;
+        }
+
         return false;
-    } **/
+
+    }
 
 }
 
 
-// MOUSE CLICK: CHANGE COLORS
 
+// MOUSE CLICK: CHANGE COLORS
 function mouseClicked() {
 
     mouse_clicked++;
