@@ -1,56 +1,274 @@
-let buffer;
-let brightness2D = []; // brightness2D[x][y] is how bright the word is at one pixel of the buffer
+let font;
+let fontPath = "MarseilleFreeRegular-MAXEB.ttf";
+
+let frame_counter = 0;
+let blinker_length = 2;
+let typed_size = 50;
+let typed_letters = [""];
+let x = 0;
+let y = 0;
+let current_line = 0;
+
+let random_x = [0];
+let random_y = [0];
+
+// COLORS
+let aktuelle_farbe = '#1B7A8C';
+let background_farbe = '#FDFDFB';
+let text_farbe = '#1B7A8C';
+
+let random_rotation = [0];
+
+let mouse_clicked = 0;
+let color_changed = 0;
+
 
 async function setup() {
+
+    // LOAD FONT 
+    font = await loadFont(fontPath);
+
     createCanvas(windowWidth, windowHeight);
 
-    // a small invisible canvas: the word is drawn on it once, and only used as data
-    buffer = createGraphics(120, 60);
-    buffer.background(0);
-    buffer.fill(255);
-    buffer.textStyle(BOLD);
-    buffer.textAlign(CENTER, CENTER);
-    buffer.textSize(40);
-    buffer.text("Type", buffer.width / 2, buffer.height / 2);
+    rectMode(CENTER);
+    noStroke();
 
-    // blur the word, so the edges of the letters become soft slopes instead of hard steps
-    // filter() is asynchronous in p5.js 2.x, so await it before reading pixels
-    await buffer.filter(BLUR, 1.2);
-
-    // read the brightness of every pixel once: [0] is the red channel, 0 for black and 255 for white
-    for (let x = 0; x < buffer.width; x++) {
-        brightness2D[x] = [];
-        for (let y = 0; y < buffer.height; y++) {
-            brightness2D[x][y] = buffer.get(x, y)[0];
-        }
-    }
 }
 
+
 function draw() {
-    background(0);
-    stroke(255);
-    strokeWeight(2);
-    noFill();
 
-    let stepX = width / buffer.width;   // distance between two points of a line
-    let stepY = height / buffer.height; // distance between two lines
-
-    // mouseX sets how high the word is pushed up, mouseY sets how strongly the lines wobble
-    let amount = map(mouseX, 0, width, 0, 40);
-    let wobble = map(mouseY, 0, height, 0, 20);
-
-    // one line for every row of the buffer
-    for (let y = 0; y < buffer.height; y++) {
-        beginShape();
-        for (let x = 0; x < buffer.width; x++) {
-            // bright pixels (the letters) push the line upward
-            let lift = brightness2D[x][y] / 255 * amount;
-
-            // smaller steps in noise() make the wobble slower and smoother
-            lift += noise(x * 0.05, y * 0.05, frameCount * 0.01) * wobble;
-
-            vertex(x * stepX, y * stepY - lift);
-        }
-        endShape();
+    // CLOCK
+    if (frameCount % 60 == 0) {
+        frame_counter++;
+        console.log(frame_counter);
     }
+
+ 
+    // COLORS
+    background(background_farbe);
+    textFont(font);
+
+
+    let text_a = typed_letters.join("");
+
+    let white_position = text_a.lastIndexOf("white");
+    let blue_position = text_a.lastIndexOf("blue");
+    let red_position = text_a.lastIndexOf("red");
+    let yellow_position = text_a.lastIndexOf("yellow");
+    let green_position = text_a.lastIndexOf("green");
+    let purple_position = text_a.lastIndexOf("purple");
+	let orange_position = text_a.lastIndexOf("orange");
+	let pink_position = text_a.lastIndexOf("pink");
+
+    let last_color_position = Math.max(
+        white_position,
+        blue_position,
+        red_position,
+        yellow_position,
+        green_position,
+        purple_position,
+			orange_position,
+			pink_position
+    );
+
+
+    // COLORS
+    if (last_color_position == white_position && white_position != -1) {
+        aktuelle_farbe = '#FDFDFB';
+        color_changed++;
+    }
+    else if (last_color_position == blue_position && blue_position != -1) {
+        aktuelle_farbe = '#8FD0F2';
+        color_changed++;
+    }
+    else if (last_color_position == red_position && red_position != -1) {
+        aktuelle_farbe = '#E4432A';
+        color_changed++;
+    }
+    else if (last_color_position == yellow_position && yellow_position != -1) {
+        aktuelle_farbe = '#F6E27A';
+        color_changed++;
+    }
+    else if (last_color_position == green_position && green_position != -1) {
+        aktuelle_farbe = '#93C572';
+        color_changed++;
+    }
+    else if (last_color_position == purple_position && purple_position != -1) {
+        aktuelle_farbe = '#B75FCB';
+        color_changed++;
+    }
+	 else if (last_color_position == orange_position && orange_position != -1) {
+        aktuelle_farbe = '#FFB347';
+        color_changed++;
+    } 
+
+	 else if (last_color_position == pink_position && pink_position != -1) {
+        aktuelle_farbe = '#ffd1dc';
+        color_changed++;
+    } 
+
+	
+
+
+    // CURRENT TEXT COLOR
+    if (aktuelle_farbe != background_farbe) {
+        text_farbe = aktuelle_farbe;
+    }
+
+    fill(text_farbe);
+
+
+    // BIG BACKGROUND TEXT
+
+    // Shows the last 3 letters
+    let text_big = typed_letters[current_line].slice(-3);
+
+    push();
+
+    textSize(windowWidth * 0.8);
+
+    fill(red(text_farbe), green(text_farbe), blue(text_farbe), 50);
+
+    textAlign(CENTER, CENTER);
+
+    text(text_big, windowWidth / 2, windowHeight / 2);
+
+    pop();
+
+
+    // NORMAL LETTERS
+
+    translate(windowWidth / 2, windowHeight / 2);
+
+    textSize(typed_size);
+    textAlign(LEFT, BASELINE);
+
+
+    for (let i = 0; i < typed_letters.length; i++) {
+
+        push();
+
+        translate(random_x[i], random_y[i]);
+
+        // rotate(random_rotation[i]);
+
+        text(typed_letters[i], 0, 0);
+
+        pop();
+
+    }
+
+
+    // CURSOR POSITION
+
+    // Calculate width of current string
+    textSize(typed_size);
+
+    let cursor_x = textWidth(typed_letters[current_line]);
+
+    // Calculate letter height
+    let letter_height = textAscent() + textDescent();
+
+    // Draw cursor
+    rectMode(CORNER);
+
+    if (frame_counter % blinker_length == 0) {
+
+        rect(
+            random_x[current_line] + cursor_x,
+            random_y[current_line] - textAscent(),
+            typed_size / 30,
+            letter_height
+        );
+
+    }
+
+
+    // CLICK INSTRUCTION
+
+    if (frame_counter >= 15 && mouse_clicked < 2) {
+
+        textSize(20);
+        text("try clicking!", 50, typed_size + 10);
+
+    }
+
+
+    // WRITE COLOR INSTRUCTION
+
+    if (frame_counter >= 8 && color_changed < 2) {
+
+        textSize(20);
+        text("try writing a color!", 50, 2*typed_size + 10);
+
+    }
+
+}
+
+
+
+
+function keyTyped() {
+
+    // USE THE SAME FONT AND SIZE AS THE DRAWN TEXT
+    textFont(font);
+    textSize(typed_size);
+
+    if (textWidth(typed_letters[current_line] + key) > windowWidth/2 - random_x[current_line]) {
+
+        current_line++;
+
+        typed_letters.push("");
+
+        random_x.push(random(-windowWidth/2, windowWidth/2-typed_size));
+
+        random_y.push(random(-windowHeight/2+typed_size, windowHeight/2));
+
+    }
+
+    typed_letters[current_line] += key;
+
+    return false;
+}
+
+
+
+function keyPressed() {
+
+    if (key === "Backspace" || key === "Delete") {
+
+        if (typed_letters[current_line].length > 0) {
+
+            typed_letters[current_line] = typed_letters[current_line].slice(0, -1);
+
+        }
+
+        else if (current_line > 0) {
+
+            typed_letters.pop();
+            current_line--;
+
+        }
+
+        return false;
+
+    }
+
+}
+
+
+// MOUSE CLICK: CHANGE COLORS
+
+function mouseClicked() {
+
+    mouse_clicked++;
+
+    let temp = background_farbe;
+
+    background_farbe = text_farbe;
+    text_farbe = temp;
+
+    aktuelle_farbe = text_farbe;
+
 }
