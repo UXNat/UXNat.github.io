@@ -327,10 +327,6 @@ function draw() {
     click_counted = true;
     }
 
-    if (enter_discovered == 1 && !enter_counted) {
-        easter_eggs++;
-        enter_counted = true;
-    }
     
 }
 
@@ -403,15 +399,14 @@ function keyPressed() {
 
         current_font++;
         enter_discovered++;
-        //easter_eggs++
 
         if (current_font > 4) {
             current_font = 1;
         }
 
-        // COUNT FONT CHANGES AS EASTER EGGS
-        if (current_font != 1) {
-            //easter_eggs++;
+        // COUNT FIRST THREE FONT CHANGES AS EASTER EGGS
+        if (enter_discovered <= 3) {
+            easter_eggs++;
         }
 
         return false;
