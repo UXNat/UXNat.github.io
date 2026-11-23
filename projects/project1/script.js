@@ -48,6 +48,14 @@ let orange_discovered = 0
 let yellow_discovered = 0
 let purple_discovered = 0
 
+let bigger_discovered = 0
+let smaller_discovered = 0
+
+let click_discovered = 0;
+let enter_discovered = 0;
+
+let click_counted = false;
+let enter_counted = false;
 
 async function setup() {
 
@@ -190,15 +198,19 @@ function draw() {
         if (last_size_position == bigger_position && bigger_position != -1) {
             typed_size = typed_size + 20;
             size_counter++;
-            easter_eggs++;
+            bigger_discovered++
         }
         else if (last_size_position == smaller_position && smaller_position != -1) {
             typed_size = typed_size - 20;
             size_counter++;
-            easter_eggs++;
+            smaller_discovered++
         }
 
         last_processed_size_position = last_size_position;
+    }
+
+    if (bigger_discovered == 1 || smaller_discovered == 1) {
+        easter_eggs++
     }
 
 
@@ -310,6 +322,16 @@ function draw() {
     text(`easter eggs collected: ${easter_eggs}`, 0, typed_size);
 
 
+   if (click_discovered == 1 && !click_counted) {
+    easter_eggs++;
+    click_counted = true;
+    }
+
+    if (enter_discovered == 1 && !enter_counted) {
+        easter_eggs++;
+        enter_counted = true;
+    }
+    
 }
 
 
@@ -380,6 +402,8 @@ function keyPressed() {
     if (key == "Enter") {
 
         current_font++;
+        enter_discovered++;
+        //easter_eggs++
 
         if (current_font > 4) {
             current_font = 1;
@@ -387,7 +411,7 @@ function keyPressed() {
 
         // COUNT FONT CHANGES AS EASTER EGGS
         if (current_font != 1) {
-            easter_eggs++;
+            //easter_eggs++;
         }
 
         return false;
@@ -402,6 +426,8 @@ function keyPressed() {
 function mouseClicked() {
 
     mouse_clicked++;
+    click_discovered++;
+    //easter_eggs++
 
     let temp = background_farbe;
 
