@@ -68,6 +68,8 @@ let rickroll_discovered = false;
 let rickroll_counted = 0;
 let rickroll_counter_hint = 0;
 
+let six_seven_counter_hint = 0;
+
 function preload() {
     rickroll = loadSound("Voicy_Rickroll (1).mp3");
 }
@@ -350,6 +352,7 @@ function draw() {
 
     if (six_seven != -1 || six_seven2 != -1|| six_seven3 != -1|| six_seven4 != -1|| six_seven5!= -1 || six_seven6!= -1 || six_seven7 != -1) {
         
+        six_seven_counter_hint++
         textSize(500)
         text("67", random(0-windowWidth/2, windowWidth/2),random(0-windowWidth/2, windowWidth/2));
         six_seven_discovered++
@@ -366,7 +369,7 @@ function draw() {
     // EASTER EGGS COUNTER
         textSize(typed_size);
         
-        text(`easter eggs collected: ${easter_eggs}`, 0, typed_size);
+        text(`easter eggs collected: ${easter_eggs}/16`, 0, typed_size);
 
 
     if (click_discovered == 1 && !click_counted) {
@@ -422,10 +425,19 @@ function draw() {
 
         fill(255,0,0)
         textSize(typed_size/1.5);
-        text("im never gonna...", 0, 5 * typed_size + 10);
+        text("im never gonna...", 0, 6 * typed_size + 10);
  
     }
 
+
+    // ENTER
+    if (frame_counter >= 250 && six_seven_counter_hint < 1) {
+
+        fill(255,0,0)
+        textSize(typed_size/1.5);
+        text("whats the best meme on earth?", 0, 7 * typed_size + 10);
+ 
+    }
     
 }
 
