@@ -210,7 +210,7 @@ function draw() {
     }
 
 
-    // CLICK INSTRUCTION
+    // CLICK 
 
     if (frame_counter >= 15 && mouse_clicked < 2) {
 
@@ -220,7 +220,7 @@ function draw() {
     }
 
 
-    // WRITE COLOR INSTRUCTION
+    // WRITE COLOR 
 
     if (frame_counter >= 8 && color_changed < 2) {
 
@@ -280,10 +280,10 @@ function keyPressed() {
 
     }
 
-    if(key == "Enter") {
+    /*if(key == "Enter") {
         rotation = rotation +1;
         return false;
-    }
+    } **/
 
 }
 
