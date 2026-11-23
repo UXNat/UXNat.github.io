@@ -8,7 +8,7 @@ let fontPath = "Cabal-w5j3.ttf";
 let fontPath2 = "Pixellettersfull-BnJ5.ttf";
 let fontPath3 = "PlayfulTime-BLBB8.ttf";
 let fontPath4 = "RoughenCornerRegular-7RjV.ttf";
- 
+
 let current_font = 1;
 
 let frame_counter = 0;
@@ -33,10 +33,20 @@ let mouse_clicked = 0;
 let color_changed = 0;
 
 let last_processed_size_position = -1;
+let previous_color_position = -1;
 
 let size_counter = 0;
 
 let easter_eggs = 0;
+
+let white_discovered = 0
+let red_discovered = 0
+let blue_discovered = 0
+let pink_discovered = 0
+let green_discovered = 0
+let orange_discovered = 0
+let yellow_discovered = 0
+let purple_discovered = 0
 
 
 async function setup() {
@@ -67,6 +77,7 @@ function draw() {
     // COLORS
     background(background_farbe);
 
+
     // SELECT CURRENT FONT
     if (current_font == 1) {
         textFont(font1);
@@ -84,6 +95,8 @@ function draw() {
 
     let text_a = typed_letters.join("");
 
+
+    // FIND COLOR POSITIONS
     let white_position = text_a.lastIndexOf("white");
     let blue_position = text_a.lastIndexOf("blue");
     let red_position = text_a.lastIndexOf("red");
@@ -92,6 +105,7 @@ function draw() {
     let purple_position = text_a.lastIndexOf("purple");
     let orange_position = text_a.lastIndexOf("orange");
     let pink_position = text_a.lastIndexOf("pink");
+
 
     let last_color_position = Math.max(
         white_position,
@@ -105,47 +119,60 @@ function draw() {
     );
 
 
-    // COLORS
-    if (last_color_position == white_position && white_position != -1) {
-        aktuelle_farbe = '#FDFDFB';
-        color_changed++;
-        easter_eggs++;
-    }
-    else if (last_color_position == blue_position && blue_position != -1) {
-        aktuelle_farbe = '#8FD0F2';
-        color_changed++;
-        easter_eggs++;
-    }
-    else if (last_color_position == red_position && red_position != -1) {
-        aktuelle_farbe = '#E4432A';
-        color_changed++;
-        easter_eggs++;
-    }
-    else if (last_color_position == yellow_position && yellow_position != -1) {
-        aktuelle_farbe = '#F6E27A';
-        color_changed++;
-        easter_eggs++;
-    }
-    else if (last_color_position == green_position && green_position != -1) {
-        aktuelle_farbe = '#93C572';
-        color_changed++;
-        easter_eggs++;
-    }
-    else if (last_color_position == purple_position && purple_position != -1) {
-        aktuelle_farbe = '#B75FCB';
-        color_changed++;
-        easter_eggs++;
-    }
-    else if (last_color_position == orange_position && orange_position != -1) {
-        aktuelle_farbe = '#FFB347';
-        color_changed++;
-        easter_eggs++;
-    }
-    else if (last_color_position == pink_position && pink_position != -1) {
-        aktuelle_farbe = '#ffd1dc';
-        color_changed++;
-        easter_eggs++;
-    }
+    // CHECK IF A NEW COLOR WAS TYPED
+    
+        if (last_color_position == white_position && white_position != -1) {
+            aktuelle_farbe = '#FDFDFB';
+            color_changed++;
+            white_discovered++
+        }
+        else if (last_color_position == blue_position && blue_position != -1) {
+            aktuelle_farbe = '#8FD0F2';
+            color_changed++;
+            
+            blue_discovered++
+        }
+        else if (last_color_position == red_position && red_position != -1) {
+            aktuelle_farbe = '#E4432A';
+            color_changed++;
+            
+            red_discovered++
+        }
+        else if (last_color_position == yellow_position && yellow_position != -1) {
+            aktuelle_farbe = '#F6E27A';
+            color_changed++;
+            
+            yellow_discovered++
+        }
+        else if (last_color_position == green_position && green_position != -1) {
+            aktuelle_farbe = '#93C572';
+            color_changed++;
+           
+            green_discovered++
+        }
+        else if (last_color_position == purple_position && purple_position != -1) {
+            aktuelle_farbe = '#B75FCB';
+            color_changed++;
+           
+            purple_discovered++
+        }
+        else if (last_color_position == orange_position && orange_position != -1) {
+            aktuelle_farbe = '#FFB347';
+            color_changed++;
+            
+            orange_discovered++
+        }
+        else if (last_color_position == pink_position && pink_position != -1) {
+            aktuelle_farbe = '#ffd1dc';
+            color_changed++;
+            
+            pink_discovered++
+        }
+
+        
+        if (white_discovered == 1 || red_discovered == 1 || blue_discovered == 1 || yellow_discovered == 1 || green_discovered == 1 || purple_discovered == 1 || pink_discovered == 1 || orange_discovered == 1) {
+            easter_eggs++
+        }
 
 
     // CHECK IF BIGGER OR SMALLER WAS TYPED
@@ -157,21 +184,23 @@ function draw() {
         smaller_position
     );
 
+
     if (last_size_position != last_processed_size_position) {
 
         if (last_size_position == bigger_position && bigger_position != -1) {
             typed_size = typed_size + 20;
-            size_counter ++;
-            //easter_eggs++;
+            size_counter++;
+            easter_eggs++;
         }
         else if (last_size_position == smaller_position && smaller_position != -1) {
             typed_size = typed_size - 20;
-            size_counter ++;
-            //easter_eggs++;
+            size_counter++;
+            easter_eggs++;
         }
 
         last_processed_size_position = last_size_position;
     }
+
 
 
     // CURRENT TEXT COLOR
@@ -180,6 +209,7 @@ function draw() {
     }
 
     fill(text_farbe);
+
 
 
     // BIG BACKGROUND TEXT
@@ -196,6 +226,7 @@ function draw() {
     text(text_big, windowWidth / 2, windowHeight / 2);
 
     pop();
+
 
 
     // NORMAL LETTERS
@@ -221,6 +252,7 @@ function draw() {
     }
 
 
+
     // CURSOR POSITION
     textSize(typed_size);
 
@@ -241,12 +273,16 @@ function draw() {
 
     }
 
-    //////////////////////////////////////////////////////// HINTS
+
+
+    ////////////////////////////////////////////////////////
+    // HINTS
+
     // CLICK
     if (frame_counter >= 15 && mouse_clicked < 2) {
 
         textSize(typed_size);
-        text("try clicking!", 0, 2* typed_size + 10);
+        text("try clicking!", 0, 2 * typed_size + 10);
 
     }
 
@@ -268,7 +304,11 @@ function draw() {
 
     }
 
-    text(`easter eggs collected: ${easter_eggs}`, 0, typed_size )
+
+    // EASTER EGGS COUNTER
+    textSize(typed_size);
+    text(`easter eggs collected: ${easter_eggs}`, 0, typed_size);
+
 
 }
 
@@ -277,7 +317,7 @@ function draw() {
 
 function keyTyped() {
 
-    // for SIZE CALC
+    // SELECT CURRENT FONT FOR SIZE CALCULATION
     if (current_font == 1) {
         textFont(font1);
     }
@@ -313,6 +353,7 @@ function keyTyped() {
 
 
 
+
 function keyPressed() {
 
     if (key === "Backspace" || key === "Delete") {
@@ -342,6 +383,11 @@ function keyPressed() {
 
         if (current_font > 4) {
             current_font = 1;
+        }
+
+        // COUNT FONT CHANGES AS EASTER EGGS
+        if (current_font != 1) {
+            easter_eggs++;
         }
 
         return false;
