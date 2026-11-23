@@ -49,7 +49,9 @@ let yellow_discovered = 0
 let purple_discovered = 0
 
 let bigger_discovered = 0
+let bigger_counted = false;
 let smaller_discovered = 0
+let smaller_counted = false;
 
 let click_discovered = 0;
 let enter_discovered = 0;
@@ -209,8 +211,19 @@ function draw() {
         last_processed_size_position = last_size_position;
     }
 
-    if (bigger_discovered == 1 || smaller_discovered == 1) {
+    /*if (bigger_discovered == 1 || smaller_discovered == 1) {
         easter_eggs++
+    }**/
+
+
+    if (bigger_discovered == 1 && !bigger_counted) {
+    easter_eggs++;
+    bigger_counted = true;
+    }
+
+    if (smaller_discovered == 1 && !smaller_counted) {
+    easter_eggs++;
+    smaller_counted = true;
     }
 
 
@@ -291,7 +304,7 @@ function draw() {
     // HINTS
 
     // CLICK
-    if (frame_counter >= 15 && mouse_clicked < 2) {
+    if (frame_counter >= 60 && mouse_clicked < 2) {
 
         textSize(typed_size);
         text("try clicking!", 0, 2 * typed_size + 10);
@@ -300,7 +313,7 @@ function draw() {
 
 
     // WRITE COLOR
-    if (frame_counter >= 8 && color_changed < 2) {
+    if (frame_counter >= 30 && color_changed < 2) {
 
         textSize(typed_size);
         text("try writing a color!", 0, 3 * typed_size + 10);
@@ -309,7 +322,7 @@ function draw() {
 
 
     // MAKE BIGGER/SMALLER
-    if (frame_counter >= 20 && size_counter < 1) {
+    if (frame_counter >= 60 && size_counter < 1) {
 
         textSize(typed_size);
         text("try writing bigger/smaller", 0, 4 * typed_size + 10);
