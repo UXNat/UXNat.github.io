@@ -17,7 +17,7 @@ let aktuelle_farbe = '#1B7A8C';
 let background_farbe = '#FDFDFB';
 let text_farbe = '#1B7A8C';
 
-let random_rotation = [0];
+let rotation = 0;
 
 let mouse_clicked = 0;
 let color_changed = 0;
@@ -125,10 +125,10 @@ function draw() {
     if (last_size_position != last_processed_size_position) {
 
         if (last_size_position == bigger_position && bigger_position != -1) {
-            typed_size = typed_size + 10;
+            typed_size = typed_size + 20;
         }
         else if (last_size_position == smaller_position && smaller_position != -1) {
-            typed_size = typed_size - 10;
+            typed_size = typed_size - 20;
         }
 
         last_processed_size_position = last_size_position;
@@ -164,6 +164,7 @@ function draw() {
     // NORMAL LETTERS
 
     translate(windowWidth / 2, windowHeight / 2);
+    rotate(rotation);
 
     textSize(typed_size);
     textAlign(LEFT, BASELINE);
@@ -277,6 +278,11 @@ function keyPressed() {
 
         return false;
 
+    }
+
+    if(key == "Enter") {
+        rotation = rotation +1;
+        return false;
     }
 
 }
