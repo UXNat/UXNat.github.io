@@ -37,6 +37,8 @@ let previous_color_position = -1;
 
 let size_counter = 0;
 
+let enter_counter_hints = 0
+
 let easter_eggs = 0;
 
 let white_discovered = 0
@@ -355,6 +357,18 @@ function draw() {
     }
 }
 
+    // EASTER EGGS COUNTER
+        textSize(typed_size);
+        
+        text(`easter eggs collected: ${easter_eggs}`, 0, typed_size);
+
+
+    if (click_discovered == 1 && !click_counted) {
+        easter_eggs++;
+        click_counted = true;
+        }
+
+    
 
     ////////////////////////////////////////////////////////
     // HINTS
@@ -362,39 +376,41 @@ function draw() {
     // CLICK
     if (frame_counter >= 60 && mouse_clicked < 2) {
 
-        textSize(typed_size);
-        text("try clicking!", 0, 2 * typed_size + 10);
+        fill(255,0,0)
+        textSize(typed_size/1.5);
+        text("you rly didnt try clicking yet?", 0, 2 * typed_size + 10);
 
     }
 
 
     // WRITE COLOR
-    if (frame_counter >= 30 && color_changed < 2) {
+    if (frame_counter >= 90 && color_changed < 2) {
 
-        textSize(typed_size);
-        text("try writing a color!", 0, 3 * typed_size + 10);
+        fill(255,0,0)
+        textSize(typed_size/1.5);
+        text("grass is...", 0, 3 * typed_size + 10);
 
     }
 
 
     // MAKE BIGGER/SMALLER
-    if (frame_counter >= 60 && size_counter < 1) {
+    if (frame_counter >= 120 && size_counter < 1) {
 
-        textSize(typed_size);
-        text("try writing bigger/smaller", 0, 4 * typed_size + 10);
+        fill(255,0,0)
+        textSize(typed_size/1.5);
+        text("this is a BIGGER challenge than you thought, huh", 0, 4 * typed_size + 10);
 
     }
 
+    // ENTER
+    if (frame_counter >= 150 && enter_counter_hints < 1) {
 
-    // EASTER EGGS COUNTER
-    textSize(typed_size);
-    text(`easter eggs collected: ${easter_eggs}`, 0, typed_size);
-
-
-   if (click_discovered == 1 && !click_counted) {
-    easter_eggs++;
-    click_counted = true;
+        fill(255,0,0)
+        textSize(typed_size/1.5);
+        text("ENTER the void", 0, 5 * typed_size + 10);
+ 
     }
+ 
 
     
 }
@@ -468,6 +484,7 @@ function keyPressed() {
 
         current_font++;
         enter_discovered++;
+        enter_counter_hints++
 
         if (current_font > 4) {
             current_font = 1;
