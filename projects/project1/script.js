@@ -59,6 +59,8 @@ let enter_discovered = 0;
 let click_counted = false;
 let enter_counted = false;
 
+let six_seven_discovered = 0;
+
 async function setup() {
 
     // LOAD FONTS
@@ -298,6 +300,26 @@ function draw() {
 
     }
 
+
+    let six_seven = text_a.lastIndexOf("sixseven") ;
+    let six_seven2 = text_a.lastIndexOf("67") ;
+    let six_seven3 = text_a.lastIndexOf("six seven") ;
+    let six_seven4 = text_a.lastIndexOf("Six Seven") ;
+    let six_seven5 = text_a.lastIndexOf("Six seven");
+    let six_seven6 = text_a.lastIndexOf("SIXSEVEN");
+    let six_seven7 = text_a.lastIndexOf("SIX SEVEN");
+
+
+    if (six_seven != -1 || six_seven2 != -1|| six_seven3 != -1|| six_seven4 != -1|| six_seven5!= -1 || six_seven6!= -1 || six_seven7 != -1) {
+        
+        textSize(500)
+        text("67", random(0-windowWidth/2, windowWidth/2),random(0-windowWidth/2, windowWidth/2));
+        six_seven_discovered++
+       
+    if (six_seven_discovered == 1){
+        easter_eggs++;
+    }
+}
 
 
     ////////////////////////////////////////////////////////
