@@ -23,6 +23,8 @@ let mouse_clicked = 0;
 let color_changed = 0;
 
 
+let last_processed_size_position = -1;
+
 async function setup() {
 
     // LOAD FONT 
@@ -108,7 +110,29 @@ function draw() {
         color_changed++;
     } 
 
-	
+
+    //check if bigger or smaller was typed
+    let bigger_position = text_a.lastIndexOf("bigger");
+    let smaller_position = text_a.lastIndexOf("smaller");
+
+
+
+    let last_size_position = Math.max(
+        bigger_position,
+        smaller_position
+    );
+
+    if (last_size_position != last_processed_size_position) {
+
+        if (last_size_position == bigger_position && bigger_position != -1) {
+            typed_size = typed_size + 10;
+        }
+        else if (last_size_position == smaller_position && smaller_position != -1) {
+            typed_size = typed_size - 10;
+        }
+
+        last_processed_size_position = last_size_position;
+    }
 
 
     // CURRENT TEXT COLOR
