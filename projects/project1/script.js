@@ -4,11 +4,11 @@ let font2;
 let font3;
 let font4;
 
-let fontPath = "MarseilleFreeRegular-MAXEB.ttf";
+let fontPath = "Cabal-w5j3.ttf";
 let fontPath2 = "Pixellettersfull-BnJ5.ttf";
 let fontPath3 = "PlayfulTime-BLBB8.ttf";
 let fontPath4 = "RoughenCornerRegular-7RjV.ttf";
-
+ 
 let current_font = 1;
 
 let frame_counter = 0;
@@ -33,6 +33,10 @@ let mouse_clicked = 0;
 let color_changed = 0;
 
 let last_processed_size_position = -1;
+
+let size_counter = 0;
+
+let easter_eggs = 0;
 
 
 async function setup() {
@@ -105,34 +109,42 @@ function draw() {
     if (last_color_position == white_position && white_position != -1) {
         aktuelle_farbe = '#FDFDFB';
         color_changed++;
+        easter_eggs++;
     }
     else if (last_color_position == blue_position && blue_position != -1) {
         aktuelle_farbe = '#8FD0F2';
         color_changed++;
+        easter_eggs++;
     }
     else if (last_color_position == red_position && red_position != -1) {
         aktuelle_farbe = '#E4432A';
         color_changed++;
+        easter_eggs++;
     }
     else if (last_color_position == yellow_position && yellow_position != -1) {
         aktuelle_farbe = '#F6E27A';
         color_changed++;
+        easter_eggs++;
     }
     else if (last_color_position == green_position && green_position != -1) {
         aktuelle_farbe = '#93C572';
         color_changed++;
+        easter_eggs++;
     }
     else if (last_color_position == purple_position && purple_position != -1) {
         aktuelle_farbe = '#B75FCB';
         color_changed++;
+        easter_eggs++;
     }
     else if (last_color_position == orange_position && orange_position != -1) {
         aktuelle_farbe = '#FFB347';
         color_changed++;
+        easter_eggs++;
     }
     else if (last_color_position == pink_position && pink_position != -1) {
         aktuelle_farbe = '#ffd1dc';
         color_changed++;
+        easter_eggs++;
     }
 
 
@@ -149,9 +161,13 @@ function draw() {
 
         if (last_size_position == bigger_position && bigger_position != -1) {
             typed_size = typed_size + 20;
+            size_counter ++;
+            //easter_eggs++;
         }
         else if (last_size_position == smaller_position && smaller_position != -1) {
             typed_size = typed_size - 20;
+            size_counter ++;
+            //easter_eggs++;
         }
 
         last_processed_size_position = last_size_position;
@@ -225,12 +241,12 @@ function draw() {
 
     }
 
-
+    //////////////////////////////////////////////////////// HINTS
     // CLICK
     if (frame_counter >= 15 && mouse_clicked < 2) {
 
-        textSize(20);
-        text("try clicking!", 50, typed_size + 10);
+        textSize(typed_size);
+        text("try clicking!", 0, 2* typed_size + 10);
 
     }
 
@@ -238,10 +254,21 @@ function draw() {
     // WRITE COLOR
     if (frame_counter >= 8 && color_changed < 2) {
 
-        textSize(20);
-        text("try writing a color!", 50, 2 * typed_size + 10);
+        textSize(typed_size);
+        text("try writing a color!", 0, 3 * typed_size + 10);
 
     }
+
+
+    // MAKE BIGGER/SMALLER
+    if (frame_counter >= 20 && size_counter < 1) {
+
+        textSize(typed_size);
+        text("try writing bigger/smaller", 0, 4 * typed_size + 10);
+
+    }
+
+    text(`easter eggs collected: ${easter_eggs}`, 0, typed_size )
 
 }
 
@@ -250,7 +277,7 @@ function draw() {
 
 function keyTyped() {
 
-    // USE THE CURRENT FONT AND SIZE
+    // for SIZE CALC
     if (current_font == 1) {
         textFont(font1);
     }
