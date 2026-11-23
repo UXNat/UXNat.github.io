@@ -4,7 +4,7 @@ let font2;
 let font3;
 let font4;
 
-let fontPath = "Cabal-w5j3.ttf";
+let fontPath = "Suisse.ttf";
 let fontPath2 = "Pixellettersfull-BnJ5.ttf";
 let fontPath3 = "PlayfulTime-BLBB8.ttf";
 let fontPath4 = "RoughenCornerRegular-7RjV.ttf";
@@ -61,6 +61,14 @@ let enter_counted = false;
 
 let six_seven_discovered = 0;
 
+let rickroll;
+let rickroll_discovered = false;
+let rickroll_counted = 0;
+
+function preload() {
+    rickroll = loadSound("Voicy_Rickroll (1).mp3");
+}
+
 async function setup() {
 
     // LOAD FONTS
@@ -106,6 +114,27 @@ function draw() {
 
 
     let text_a = typed_letters.join("");
+
+
+     // RICKROLL EASTER EGG
+    let rickroll_count = text_a.split("rickroll").length - 1;
+
+    if (rickroll_count > rickroll_counted) {
+
+        rickroll.stop();
+        rickroll.play();
+
+        rickroll_counted = rickroll_count;
+
+        // ONLY COUNT THE FIRST DISCOVERY
+        if (!rickroll_discovered) {
+
+            easter_eggs++;
+            rickroll_discovered = true;
+
+        }
+
+    }
 
 
     // FIND COLOR POSITIONS
@@ -286,13 +315,18 @@ function draw() {
     let cursor_x = textWidth(typed_letters[current_line]);
 
     let letter_height = textAscent() + textDescent();
+     let cursor_offset = 0;
 
     rectMode(CORNER);
 
     if (frame_counter % blinker_length == 0) {
 
+        if (current_font == 1) {
+            cursor_offset = 0;
+        }
+
         rect(
-            random_x[current_line] + cursor_x,
+            random_x[current_line] + cursor_x + cursor_offset,
             random_y[current_line] - textAscent(),
             typed_size / 30,
             letter_height
