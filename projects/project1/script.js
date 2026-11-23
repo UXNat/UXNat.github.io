@@ -66,6 +66,7 @@ let six_seven_discovered = 0;
 let rickroll;
 let rickroll_discovered = false;
 let rickroll_counted = 0;
+let rickroll_counter_hint = 0;
 
 function preload() {
     rickroll = loadSound("Voicy_Rickroll (1).mp3");
@@ -119,7 +120,7 @@ function draw() {
 
 
      // RICKROLL EASTER EGG
-    let rickroll_count = text_a.split("rickroll").length - 1;
+    let rickroll_count = text_a.split("give you up").length - 1;
 
     if (rickroll_count > rickroll_counted) {
 
@@ -133,6 +134,7 @@ function draw() {
 
             easter_eggs++;
             rickroll_discovered = true;
+            rickroll_counter_hint++;
 
         }
 
@@ -357,6 +359,10 @@ function draw() {
     }
 }
 
+    //let name = text_a.lastIndexOf("Nat") ;
+
+
+
     // EASTER EGGS COUNTER
         textSize(typed_size);
         
@@ -411,6 +417,14 @@ function draw() {
  
     }
  
+    // ENTER
+    if (frame_counter >= 180 && rickroll_counter_hint < 1) {
+
+        fill(255,0,0)
+        textSize(typed_size/1.5);
+        text("im never gonna...", 0, 5 * typed_size + 10);
+ 
+    }
 
     
 }
