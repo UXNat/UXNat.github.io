@@ -1,10 +1,3 @@
-let table;
-
-let years = [];
-let names = [];
-let colors = [];
-
-
 let player_x = 0;
 let player_y = 0;
 let player_size = 50
@@ -14,8 +7,8 @@ let ground_r = 0
 let ground_g = 0
 let ground_b = 0
 
-let velocity_y = 0;
-let gravity = 0.5;
+let velocity_y = 0; //how fast player moves
+let gravity = 0.5; //how the speed changes over time 
 let jump_strength = -12;
 
 let ground_y = 0;
@@ -94,8 +87,8 @@ function draw() {
 
 
     // GRAVITY
-    player_y += velocity_y;
-    velocity_y += gravity;
+    player_y += velocity_y; // 0 -12 = -12, -12 - 11.5 = -23.5, ...
+    velocity_y += gravity; //-12 +0.5, +0.5, +0.5 ... wird immer höher dh sinkt wieder
 
 
     // GROUND COLLISION
@@ -122,7 +115,7 @@ function draw() {
 function keyPressed() {
 
     if (key == " " && !is_jumping) {
-    velocity_y = jump_strength;
+    velocity_y = jump_strength; //velocity wird zu -12 y dh geht hoch
     is_jumping = true;
     was_jumping = true;
 }
