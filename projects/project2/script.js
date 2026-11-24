@@ -23,6 +23,8 @@ let is_jumping = false;
 let jumped_counter = 0;
 let was_jumping = false;
 
+
+
 function setup(){
  createCanvas(windowWidth, windowHeight)
 	noStroke();
@@ -58,12 +60,34 @@ function draw() {
 
     // LEFT AND RIGHT MOVEMENT
     if (keyIsDown(LEFT_ARROW)) {
-        player_x--;
+        player_x -= 10;
     }
 
     if (keyIsDown(RIGHT_ARROW)) {
-        player_x++;
+        player_x+= 10;
     }
+
+
+    //////// print DATA  /////////////////////////////////////////////////////////////////////
+    textSize(60);   
+    text(`jumps: ${jumped_counter} `, -100, -100)
+
+    //////// visualize DATA  /////////////////////////////////////////////////////////////////////
+    fill(255,0,0)
+    rect(-windowWidth/2,-player_size/2, jumped_counter*100, 50 )
+
+    //JUMPS
+    /*let previous_jumped = 0;
+    let jumped = 0;
+
+        if (jumped > previous_jumped) {
+            console.log("number of jumps increased!");
+            text_farbe(`jumps: ${jumped_counter} `)
+        }
+
+        previous_jumped = jumped;**/
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
     // GRAVITY
@@ -79,7 +103,9 @@ function draw() {
 
 	    if (was_jumping) {
 	        jumped_counter++;
-	        console.log(jumped_counter);
+            fill(255)
+            
+	        //console.log(jumped_counter);
 	        was_jumping = false;
 			ground_r += 20
 			ground_g += 20
