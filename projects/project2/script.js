@@ -76,6 +76,9 @@ function draw() {
     fill(255,0,0)
     rect(-windowWidth/2,-player_size/2, jumped_counter*100, 50 )
 
+
+    //(map(constrain(jumped_counter, 0, width), 0, width, wi, 40))
+
     //JUMPS
     /*let previous_jumped = 0;
     let jumped = 0;
