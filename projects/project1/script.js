@@ -222,31 +222,42 @@ function draw() {
         }
 
 
-    // CHECK IF BIGGER OR SMALLER WAS TYPED
-    let bigger_position = text_a.lastIndexOf("bigger");
-    let smaller_position = text_a.lastIndexOf("smaller");
+            // CHECK IF BIGGER OR SMALLER WAS TYPED
+        let lower_text = text_a.toLowerCase();
 
-    let last_size_position = Math.max(
-        bigger_position,
-        smaller_position
-    );
+        let bigger_position = Math.max(
+            lower_text.lastIndexOf("bigger"),
+            lower_text.lastIndexOf("big")
+        );
+
+        let smaller_position = Math.max(
+            lower_text.lastIndexOf("smaller"),
+            lower_text.lastIndexOf("small")
+        );
+
+        let last_size_position = Math.max(
+            bigger_position,
+            smaller_position
+        );
 
 
-    if (last_size_position != last_processed_size_position) {
+        // ONLY PROCESS A NEW SIZE COMMAND ONCE
+        if (last_size_position != last_processed_size_position && last_size_position != -1) {
 
-        if (last_size_position == bigger_position && bigger_position != -1) {
-            typed_size = typed_size + 20;
-            size_counter++;
-            bigger_discovered++
+            if (last_size_position == bigger_position) {
+                typed_size = typed_size + 20;
+                size_counter++;
+                bigger_discovered++;
+            }
+
+            else if (last_size_position == smaller_position) {
+                typed_size = typed_size - 20;
+                size_counter++;
+                smaller_discovered++;
+            }
+
+            last_processed_size_position = last_size_position;
         }
-        else if (last_size_position == smaller_position && smaller_position != -1) {
-            typed_size = typed_size - 20;
-            size_counter++;
-            smaller_discovered++
-        }
-
-        last_processed_size_position = last_size_position;
-    }
 
     /*if (bigger_discovered == 1 || smaller_discovered == 1) {
         easter_eggs++
@@ -407,7 +418,7 @@ function draw() {
 
         fill(255,0,0)
         textSize(typed_size/1.5);
-        text("this is a BIGGER challenge than you thought, huh", 0, 4 * typed_size + 10);
+        text("your grandma cant read this, its too SMALL", 0, 4 * typed_size + 10);
 
     }
 
@@ -416,7 +427,7 @@ function draw() {
 
         fill(255,0,0)
         textSize(typed_size/1.5);
-        text("ENTER the void", 0, 5 * typed_size + 10);
+        text("ENTER", 0, 5 * typed_size + 10);
  
     }
  
@@ -425,13 +436,13 @@ function draw() {
 
         fill(255,0,0)
         textSize(typed_size/1.5);
-        text("im never gonna...", 0, 6 * typed_size + 10);
+        text("'im never gonna...'", 0, 6 * typed_size + 10);
  
     }
 
 
     // ENTER
-    if (frame_counter >= 250 && six_seven_counter_hint < 1) {
+    if (frame_counter >= 210 && six_seven_counter_hint < 1) {
 
         fill(255,0,0)
         textSize(typed_size/1.5);
