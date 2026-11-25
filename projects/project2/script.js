@@ -60,14 +60,29 @@ function draw() {
         player_x+= 10;
     }
 
+    
+    
+
 
     //////// print DATA  /////////////////////////////////////////////////////////////////////
     textSize(60);   
     text(`jumps: ${jumped_counter} `, -100, -100)
 
     //////// visualize DATA  /////////////////////////////////////////////////////////////////////
+    let rect_width = jumped_counter*100
+    
     fill(255,0,0)
-    rect(-windowWidth/2,-player_size/2, jumped_counter*100, 50 )
+    rect(-windowWidth/2,-player_size/2, rect_width, 50 )
+
+    
+     if (player_x - player_size/2 < -windowWidth/2 + rect_width) {
+    player_x = -windowWidth/2 + rect_width + player_size/2;
+    }
+
+
+
+    // RED BAR COLLISION WITH PLAYER
+   
 
 
     //(map(constrain(jumped_counter, 0, width), 0, width, wi, 40))
@@ -109,6 +124,9 @@ function draw() {
     }
 
 	}
+
+
+    
 }
 
 
@@ -121,4 +139,5 @@ function keyPressed() {
 }
 
 }
+
 
