@@ -96,8 +96,8 @@ function createCity() {
   allWindows = [];
 
   // HOUSE CELLS
-  let cellW = 260;
-  let cellH = 240;
+  let cellW = 260+100;
+  let cellH = 240+100;
 
   // CHECK HOW MANY HOUSES FIT
   let columns = ceil(width / cellW);
@@ -165,22 +165,28 @@ function addBuilding(x, y, w, h, colour, cols, rows) {
 
 
   // WINDOW DIMENSIONS
-  let windowW = min(20, (w - 50) / cols);
-  let windowH = min(32, (h - 65) / rows);
+  let windowW = min(34, (w - 50) / cols);
+  let windowH = min(38, (h - 65) / rows);
 
 
+  
   // SPACING BETWEEN WINDOWS
-  let gapX = (w - 50 - cols * windowW) / (cols - 1);
-  let gapY = (h - 65 - rows * windowH) / (rows - 1);
-
+let gapX = ((w - 50 - cols * windowW) / (cols - 1)) * 0.7;
+let gapY = ((h - 65 - rows * windowH) / (rows - 1)) * 0.7;
 
   // CREATE WINDOWS
   for (let row = 0; row < rows; row++) {
 
     for (let col = 0; col < cols; col++) {
 
-      let wx = 25 + col * (windowW + gapX);
-      let wy = 35 + row * (windowH + gapY);
+     let totalW = cols * windowW + (cols - 1) * gapX;
+    let totalH = rows * windowH + (rows - 1) * gapY;
+
+    let startX = (w - totalW) / 2;
+    let startY = (h - totalH) / 2;
+
+    let wx = startX + col * (windowW + gapX);
+    let wy = startY + row * (windowH + gapY);   
 
       // PLACEHOLDER SOLAR YEAR
       let solarYear = null;
@@ -257,7 +263,7 @@ if (win.isSolar === true) {
 
   // WINDOW DIVISIONS
   stroke(bg);
-  strokeWeight(3);
+  strokeWeight(4);
 
   line(
     x + win.w / 2,
