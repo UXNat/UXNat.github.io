@@ -69,15 +69,27 @@ function draw() {
     text(`jumps: ${jumped_counter} `, -100, -100)
 
     //////// visualize DATA  /////////////////////////////////////////////////////////////////////
+    
+    
+    //Jumping Bar
     let rect_width = jumped_counter*100
+
+    rectMode(CORNER)
     
     fill(255,0,0)
     rect(-windowWidth/2,-player_size/2, rect_width, 50 )
 
-    
-     if (player_x - player_size/2 < -windowWidth/2 + rect_width) {
+     /*if (player_x - player_size/2 < -windowWidth/2 + rect_width) {
     player_x = -windowWidth/2 + rect_width + player_size/2;
-    }
+    }**/
+
+    //x Bar
+
+
+    //y Bar
+
+
+
 
 
 
@@ -104,6 +116,32 @@ function draw() {
     // GRAVITY
     player_y += velocity_y; // 0 -12 = -12, -12 - 11.5 = -23.5, ...
     velocity_y += gravity; //-12 +0.5, +0.5, +0.5 ... wird immer höher dh sinkt wieder
+
+
+    // RED BAR COLLISION
+
+    let red_bar_top = -player_size/2;
+    let red_bar_left = -windowWidth/2;
+    let red_bar_right = red_bar_left + rect_width;
+
+    // Check if player lands on red bar
+    if (
+        velocity_y > 0 &&
+        player_y + player_size/2 >= red_bar_top &&
+        player_y - player_size/2 < red_bar_top &&
+        player_x + player_size/2 > red_bar_left &&
+        player_x - player_size/2 < red_bar_right
+    ) {
+        player_y = red_bar_top - player_size/2;
+        velocity_y = 0;
+        is_jumping = false;
+
+        if (was_jumping) {
+            jumped_counter++;
+            was_jumping = false;
+        }
+    }
+
 
 
     // GROUND COLLISION
