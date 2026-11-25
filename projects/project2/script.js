@@ -19,7 +19,24 @@ let table;
 let years = [];
 let capacities = [];
 
-let yearSlider;
+// CUSTOM SLIDER //////////////////////////////////////////////
+
+// SLIDER POSITION
+let sliderMargin = 50;
+let sliderY = 155;
+
+// SLIDER APPEARANCE
+let sliderLineWeight = 6;
+let sliderCircleSize = 30;
+
+let sliderLineColour = creamWindow;
+let sliderCircleColour = yellowWindow;
+
+// SLIDER INTERACTION
+let sliderStart;
+let sliderEnd;
+
+let draggingSlider = false;
 
 
 async function setup() {
@@ -41,27 +58,15 @@ async function setup() {
 
   createCity();
 
-  // CREATE YEAR SLIDER //////////////////////////////////////////////
-  yearSlider = createSlider(2000, 2023, 2000, 1);
-
-  yearSlider.position(30, height - 45);
-  yearSlider.size(300);
-
-  // UPDATE YEAR WHEN SLIDER MOVES
-  yearSlider.input(function() {
-
-    currentYear = int(yearSlider.value());
-
-    updateSolarWindows();
-
-  });
+  // SET SLIDER POSITION
+  sliderStart = sliderMargin;
+  sliderEnd = width - sliderMargin;
 
   updateSolarWindows();
 }
 
 
 function draw() {
-
 
   background(bg);
 
@@ -76,13 +81,135 @@ function draw() {
   fill(creamWindow);
   noStroke();
 
-  textSize(48);
-  textAlign(LEFT, TOP);
+  textSize(60);
+  textAlign(CENTER);
 
-  text(currentYear, 30, 25);
+  text(currentYear, windowWidth/2, windowHeight/2);
 
   pop();
 
+  // DRAW CUSTOM SLIDER
+  drawYearSlider();
+
+}
+
+
+// CUSTOM YEAR SLIDER //////////////////////////////////////////////
+
+
+function drawYearSlider() {
+
+  // SLIDER POSITION
+  let y = height - sliderY;
+
+  // CALCULATE CIRCLE POSITION FROM CURRENT YEAR
+  let sliderPosition = map(
+    currentYear,
+    2000,
+    2023,
+    sliderStart,
+    sliderEnd
+  );
+
+  push();
+
+  // DRAW SLIDER LINE
+  stroke(sliderLineColour);
+  strokeWeight(sliderLineWeight);
+
+  line(
+    sliderStart,
+    y,
+    sliderEnd,
+    y
+  );
+
+  // DRAW SLIDER CIRCLE
+  noStroke();
+  fill(sliderCircleColour);
+
+  circle(sliderPosition, y, sliderCircleSize );
+
+  pop();
+
+}
+
+
+// SLIDER MOUSE INTERACTION //////////////////////////////////////////////
+
+
+function mousePressed() {
+
+  let y = height - sliderY;
+
+  let sliderPosition = map(
+    currentYear,
+    2000,
+    2023,
+    sliderStart,
+    sliderEnd
+  );
+
+  // CHECK IF MOUSE IS CLOSE TO THE SLIDER
+  if (
+    mouseX >= sliderStart - sliderCircleSize &&
+    mouseX <= sliderEnd + sliderCircleSize &&
+    abs(mouseY - y) < sliderCircleSize
+  ) {
+
+    draggingSlider = true;
+
+    updateSliderYear();
+
+  }
+
+}
+
+
+function mouseDragged() {
+
+  if (draggingSlider) {
+    updateSliderYear();
+  }
+
+}
+
+
+function mouseReleased() {
+
+  draggingSlider = false;
+
+}
+
+
+// UPDATE YEAR WHEN SLIDER MOVES //////////////////////////////////////////////
+
+
+function updateSliderYear() {
+
+  let newPosition = constrain(
+    mouseX,
+    sliderStart,
+    sliderEnd
+  );
+
+  let newYear = round(
+    map(
+      newPosition,
+      sliderStart,
+      sliderEnd,
+      2000,
+      2023
+    )
+  );
+
+  if (newYear !== currentYear) {
+
+    currentYear = newYear;
+
+    updateSolarWindows();
+
+  }
 
 }
 
@@ -169,24 +296,24 @@ function addBuilding(x, y, w, h, colour, cols, rows) {
   let windowH = min(38, (h - 65) / rows);
 
 
-  
   // SPACING BETWEEN WINDOWS
-let gapX = ((w - 50 - cols * windowW) / (cols - 1)) * 0.7;
-let gapY = ((h - 65 - rows * windowH) / (rows - 1)) * 0.7;
+  let gapX = ((w - 50 - cols * windowW) / (cols - 1)) * 0.7;
+  let gapY = ((h - 65 - rows * windowH) / (rows - 1)) * 0.7;
+
 
   // CREATE WINDOWS
   for (let row = 0; row < rows; row++) {
 
     for (let col = 0; col < cols; col++) {
 
-     let totalW = cols * windowW + (cols - 1) * gapX;
-    let totalH = rows * windowH + (rows - 1) * gapY;
+      let totalW = cols * windowW + (cols - 1) * gapX;
+      let totalH = rows * windowH + (rows - 1) * gapY;
 
-    let startX = (w - totalW) / 2;
-    let startY = (h - totalH) / 2;
+      let startX = (w - totalW) / 2;
+      let startY = (h - totalH) / 2;
 
-    let wx = startX + col * (windowW + gapX);
-    let wy = startY + row * (windowH + gapY);   
+      let wx = startX + col * (windowW + gapX);
+      let wy = startY + row * (windowH + gapY);
 
       // PLACEHOLDER SOLAR YEAR
       let solarYear = null;
@@ -224,9 +351,9 @@ function drawBuilding(b) {
   fill(roofColour);
 
   triangle(
-    b.x, b.y,                   // bottom left
-    b.x + b.w / 2, b.y - 45,    // top point
-    b.x + b.w, b.y              // bottom right
+    b.x, b.y,
+    b.x + b.w / 2, b.y - 45,
+    b.x + b.w, b.y
   );
 
 
@@ -252,9 +379,9 @@ function drawWindow(b, win) {
 
 
   // SOLAR-POWERED WINDOW
-if (win.isSolar === true) {
-  windowColour = yellowWindow;
-}
+  if (win.isSolar === true) {
+    windowColour = yellowWindow;
+  }
 
   fill(windowColour);
 
@@ -327,8 +454,9 @@ function windowResized() {
 
   createCity();
 
-  updateSolarWindows();
+  sliderStart = sliderMargin;
+  sliderEnd = width - sliderMargin;
 
-  yearSlider.position(30, height - 45);
+  updateSolarWindows();
 
 }
