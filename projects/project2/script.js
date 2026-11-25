@@ -1,6 +1,6 @@
 let player_x = 0;
 let player_y = 0;
-let player_size = 50
+let player_size = 80
 
 
 let ground_r = 0
@@ -15,6 +15,9 @@ let ground_y = 0;
 let is_jumping = false;
 let jumped_counter = 0;
 let was_jumping = false;
+
+
+
 
 
 
@@ -61,86 +64,66 @@ function draw() {
     }
 
     
-    
+    // GRAVITY
+    player_y += velocity_y; // 0 -12 = -12, -12 - 11.5 = -23.5, ...
+    velocity_y += gravity; //-12 +0.5, +0.5, +0.5 ... wird immer höher dh sinkt wieder
+
 
 
     //////// print DATA  /////////////////////////////////////////////////////////////////////
     textSize(60);   
     text(`jumps: ${jumped_counter} `, -100, -100)
 
-    //////// visualize DATA  /////////////////////////////////////////////////////////////////////
+    //////// visualize DATA as a bar /////////////////////////////////////////////////////////////////////
     
     
-    //Jumping Bar
-    let rect_width = jumped_counter*100
+    //red Jumping Bar
+    let rect_width_jumped = jumped_counter*200
+    let rect_width_y = abs(player_y)*2
+
+    //let y_counted = player_y;
 
     rectMode(CORNER)
     
+    //JUMP
     fill(255,0,0)
-    rect(-windowWidth/2,-player_size/2, rect_width, 50 )
+    rect(-windowWidth/2,-player_size/2, rect_width_jumped, 50 )
 
-     /*if (player_x - player_size/2 < -windowWidth/2 + rect_width) {
-    player_x = -windowWidth/2 + rect_width + player_size/2;
-    }**/
-
-    //x Bar
+    //
+    fill(0,255,0)
+    rect(-windowWidth/2,-player_size/2 - 50, rect_width_y, 50 )
 
 
-    //y Bar
-
-
-
-
-
-
-    // RED BAR COLLISION WITH PLAYER
-   
-
-
-    //(map(constrain(jumped_counter, 0, width), 0, width, wi, 40))
-
-    //JUMPS
-    /*let previous_jumped = 0;
-    let jumped = 0;
-
-        if (jumped > previous_jumped) {
-            console.log("number of jumps increased!");
-            text_farbe(`jumps: ${jumped_counter} `)
-        }
-
-        previous_jumped = jumped;**/
     
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    // GRAVITY
-    player_y += velocity_y; // 0 -12 = -12, -12 - 11.5 = -23.5, ...
-    velocity_y += gravity; //-12 +0.5, +0.5, +0.5 ... wird immer höher dh sinkt wieder
+     //////// check collisions of bars /////////////////////////////////////////////////////////////////////
 
 
     // RED BAR COLLISION
 
     let red_bar_top = -player_size/2;
     let red_bar_left = -windowWidth/2;
-    let red_bar_right = red_bar_left + rect_width;
+    let red_bar_right = red_bar_left + rect_width_jumped;
 
-    // Check if player lands on red bar
-    if (
-        velocity_y > 0 &&
-        player_y + player_size/2 >= red_bar_top &&
-        player_y - player_size/2 < red_bar_top &&
-        player_x + player_size/2 > red_bar_left &&
-        player_x - player_size/2 < red_bar_right
-    ) {
-        player_y = red_bar_top - player_size/2;
-        velocity_y = 0;
-        is_jumping = false;
+        // Check if player lands on red bar
+        if (
+            velocity_y > 0 &&
+            player_y + player_size/2 >= red_bar_top &&
+            player_y - player_size/2 < red_bar_top &&
+            player_x + player_size/2 > red_bar_left &&
+            player_x - player_size/2 < red_bar_right
+        ) {
+            player_y = red_bar_top - player_size/2;
+            velocity_y = 0;
+            is_jumping = false;
+            
 
-        if (was_jumping) {
-            jumped_counter++;
-            was_jumping = false;
+            if (was_jumping) {
+                jumped_counter++;
+                was_jumping = false;
+            }
         }
-    }
 
 
 
