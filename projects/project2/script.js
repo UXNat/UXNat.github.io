@@ -33,6 +33,40 @@ let yellowWindow;
 let creamWindow;
 
 
+// BUILDING COLOUR PALETTES //////////////////////////////////////////////
+
+// EACH BUILDING HAS ITS OWN COLOUR
+// NIGHT COLOURS AND DAY COLOURS
+
+let buildingNightColours = [
+    "#1C1B30", // DARK PURPLE
+    "#172C46", // DARK BLUE
+    "#48232E", // DARK RED
+    "#30213D"  // DARK VIOLET
+];
+
+let buildingDayColours = [
+    "#D9C7A5", // WARM BEIGE
+    "#A9C5D1", // LIGHT BLUE
+    "#C98D86", // MUTED RED
+    "#B5A0C4"  // LIGHT PURPLE
+];
+
+let roofNightColours = [
+    "#17243D", // DARK BLUE
+    "#301C2B", // DARK RED
+    "#211B35", // DARK PURPLE
+    "#263447"  // BLUE GREY
+];
+
+let roofDayColours = [
+    "#718D9B", // BLUE GREY
+    "#A16D72", // MUTED RED
+    "#887A9E", // PURPLE
+    "#8299A4"  // LIGHT BLUE
+];
+
+
 // SET COLOURS //////////////////////////////////////////////
 
 function setColours() {
@@ -79,14 +113,22 @@ function setColours() {
     // KEEP WINDOWS WARM
     yellowWindow = color("#F5BD55");
 
-    // UPDATE EXISTING BUILDINGS
+
+    // UPDATE EACH BUILDING'S OWN COLOUR
+
     for (let b of buildings) {
 
-        if (b.isBlue) {
-            b.colour = blueBuilding;
-        } else {
-            b.colour = darkBuilding;
-        }
+        b.colour = lerpColor(
+            color(buildingNightColours[b.colourIndex]),
+            color(buildingDayColours[b.colourIndex]),
+            daylightAmount
+        );
+
+        b.roofColour = lerpColor(
+            color(roofNightColours[b.roofIndex]),
+            color(roofDayColours[b.roofIndex]),
+            daylightAmount
+        );
 
     }
 
@@ -168,7 +210,6 @@ async function setup() {
 
 // DRAW //////////////////////////////////////////////
 
-
 function draw() {
 
     // AUTOMATIC TIME PROGRESSION
@@ -215,9 +256,6 @@ function draw() {
 }
 
 
-
-
-
 // SUN AND MOON //////////////////////////////////////////////
 
 function drawCelestialBodies() {
@@ -228,7 +266,6 @@ function drawCelestialBodies() {
     // 06:00 = RIGHT
     // 12:00 = TOP
     // 18:00 = LEFT
-    // 00:00 = BOTTOM
 
     let sunX = map(
         simulatedTime, 6, 18, width - 40, 40
@@ -238,9 +275,6 @@ function drawCelestialBodies() {
 
     // MOON POSITION
     // ALWAYS OPPOSITE THE SUN
-    // 18:00 = RIGHT
-    // 00:00 = TOP
-    // 06:00 = LEFT
 
     let moonX;
     let moonY;
@@ -322,10 +356,6 @@ function drawCelestialBodies() {
 
 }
 
-
-
-
-// CLOCK //////////////////////////////////////////////
 
 // CLOCK //////////////////////////////////////////////
 
@@ -429,7 +459,7 @@ function drawClock() {
     // TIME
     textSize(42);
 
-    text(timeText,controlX,clockY - 25 - 20);
+    text(timeText, controlX, clockY - 25 - 20);
 
 
     // AM / PM
@@ -438,7 +468,7 @@ function drawClock() {
     if (simulatedTime < 12) {
         text("AM", controlX, clockY);
     } else {
-        text("PM", controlX, clockY );
+        text("PM", controlX, clockY);
     }
 
 
@@ -470,6 +500,7 @@ function drawClock() {
     pop();
 
 }
+
 
 // CLOCK INTERACTION //////////////////////////////////////////////
 
@@ -506,6 +537,7 @@ function mousePressed() {
 
     // CHECK CLOCK FACE
     if (dist(mouseX, mouseY, clockX, clockY) <= clockRadius + 10) {
+
         draggingClock = true;
         isAutomatic = false;
 
@@ -513,6 +545,7 @@ function mousePressed() {
         draggingHalfOfDay = simulatedTime >= 12 ? 12 : 0;
 
         updateTimeFromMouse();
+
     }
 
 }
@@ -529,7 +562,6 @@ function mouseDragged() {
 
 function mouseReleased() {
     draggingClock = false;
-
 }
 
 
@@ -629,19 +661,19 @@ function createCity() {
             let y =
                 cityTop + row * actualCellH + actualCellH - h - 10;
 
-            // VARY HOUSE COLOURS
-            let colour;
 
-            if ((row + col) % 3 === 0) {
-                colour = blueBuilding;
-            } else {
-                colour = darkBuilding;
-            }
+            // RANDOM BUILDING COLOUR
+            let colourIndex = floor(random(buildingNightColours.length));
+
+            // RANDOM ROOF COLOUR
+            let roofIndex = floor(random(roofNightColours.length));
+
 
             // CREATE HOUSE
             addBuilding(
                 x, y, w, h,
-                colour,
+                colourIndex,
+                roofIndex,
                 4, 3
             );
 
@@ -654,7 +686,7 @@ function createCity() {
 
 // BUILDING FUNCTION //////////////////////////////////////////////
 
-function addBuilding(x, y, w, h, colour, cols, rows) {
+function addBuilding(x, y, w, h, colourIndex, roofIndex, cols, rows) {
 
     let b = {
 
@@ -663,10 +695,12 @@ function addBuilding(x, y, w, h, colour, cols, rows) {
         w: w,
         h: h,
 
-        colour: colour,
+        // REMEMBER RANDOM COLOUR SELECTION
+        colourIndex: colourIndex,
+        roofIndex: roofIndex,
 
-        // REMEMBER BUILDING TYPE
-        isBlue: colour === blueBuilding,
+        colour: color(buildingNightColours[colourIndex]),
+        roofColour: color(roofNightColours[roofIndex]),
 
         cols: cols,
         rows: rows,
@@ -674,6 +708,7 @@ function addBuilding(x, y, w, h, colour, cols, rows) {
         windows: []
 
     };
+
 
     // WINDOW DIMENSIONS
     let windowW = min(34, (w - 50) / cols);
@@ -741,7 +776,7 @@ function drawBuilding(b) {
     );
 
     // ROOF
-    fill(roofColour);
+    fill(b.roofColour);
 
     triangle(
         b.x, b.y,
@@ -814,7 +849,6 @@ function updateWindowStates() {
 
     // RESET ALL WINDOWS
     // START WITH 50% OF WINDOWS ON
-    // THIS REPRESENTS PEOPLE WHO ARE STILL AWAKE AT MIDNIGHT
 
     randomSeed(42);
 
@@ -926,7 +960,9 @@ function changeRandomWindows(amount, turnOn) {
 function shuffleWindows(array) {
 
     for (let i = array.length - 1; i > 0; i--) {
+
         let j = floor(random(i + 1));
+
         // SWAP TWO POSITIONS
         let temp = array[i];
         array[i] = array[j];
