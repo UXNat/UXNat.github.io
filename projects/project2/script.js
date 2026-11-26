@@ -480,6 +480,8 @@ function mousePressed() {
     let clockX = position.x;
     let clockY = position.y;
 
+    let draggingHalfOfDay = 0;
+
     // CHECK AUTO BUTTON
     let controlX = clockX - clockRadius - 85;
 
@@ -503,13 +505,14 @@ function mousePressed() {
 
 
     // CHECK CLOCK FACE
-    if (
-        dist(mouseX, mouseY, clockX, clockY) <= clockRadius + 10
-    ) {
+    if (dist(mouseX, mouseY, clockX, clockY) <= clockRadius + 10) {
         draggingClock = true;
         isAutomatic = false;
-        updateTimeFromMouse();
 
+        // REMEMBER AM OR PM WHEN DRAGGING STARTS
+        draggingHalfOfDay = simulatedTime >= 12 ? 12 : 0;
+
+        updateTimeFromMouse();
     }
 
 }
