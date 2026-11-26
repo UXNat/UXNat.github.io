@@ -5,19 +5,73 @@ let previousYear = currentYear;
 let buildings = [];
 let allWindows = [];
 
-// COLOURS
-const bg = "#111326";
-const darkBuilding = "#1C1B30";
-const blueBuilding = "#203B5D";
-const roofColour = "#17243D";
-const darkWindow = "#101729";
-const yellowWindow = "#F5BD55";
-const creamWindow = "#F0D39A";
+// DAY / NIGHT MODE //////////////////////////////////////////////
+
+// FALSE = NIGHT, TRUE = DAY
+let isDay = false;
+
+
+// COLOURS (change automatically with mode)
+let bg;
+let darkBuilding;
+let blueBuilding;
+let roofColour;
+let darkWindow;
+let yellowWindow;
+let creamWindow;
+
+
+// APPLY COLOURS //////////////////////////////////////////////
+
+function setColours() {
+
+  if (isDay === false) {
+
+    // NIGHT COLOURS
+    bg = "#111326";
+    darkBuilding = "#1C1B30";
+    blueBuilding = "#203B5D";
+    roofColour = "#17243D";
+    darkWindow = "#101729";
+    yellowWindow = "#F5BD55";
+    creamWindow = "#F0D39A";
+
+  } else {
+
+    // DAY COLOURS
+    bg = "#DCE8E8";
+    darkBuilding = "#D9C7A5";
+    blueBuilding = "#A9C5D1";
+    roofColour = "#718D9B";
+    darkWindow = "#839BA4";
+    yellowWindow = "#F5BD55";
+    creamWindow = "#304C5A";
+
+  }
+
+  // SLIDER COLOURS
+  sliderLineColour = creamWindow;
+  sliderCircleColour = yellowWindow;
+
+  // UPDATE EXISTING BUILDINGS
+  for (let b of buildings) {
+
+    if (b.isBlue) {
+      b.colour = blueBuilding;
+    } else {
+      b.colour = darkBuilding;
+    }
+
+  }
+
+}
+
 
 let table;
 
 let years = [];
 let capacities = [];
+
 
 // CUSTOM SLIDER //////////////////////////////////////////////
 
@@ -29,8 +83,8 @@ let sliderY = 125;
 let sliderLineWeight = 6;
 let sliderCircleSize = 30;
 
-let sliderLineColour = creamWindow;
-let sliderCircleColour = yellowWindow;
+let sliderLineColour;
+let sliderCircleColour;
 
 // SLIDER INTERACTION
 let sliderStart;
@@ -39,9 +93,20 @@ let sliderEnd;
 let draggingSlider = false;
 
 
+// DAY / NIGHT BUTTON //////////////////////////////////////////////
+
+// BUTTON POSITION
+let toggleWidth = 220;
+let toggleHeight = 92;
+let toggleMargin = 30;
+
+
 async function setup() {
+
   createCanvas(windowWidth, windowHeight);
   noStroke();
+
+  setColours();
 
   table = await loadTable("solar_data.csv", ";", "header");
 
@@ -63,6 +128,7 @@ async function setup() {
   sliderEnd = width - sliderMargin;
 
   updateSolarWindows();
+
 }
 
 
@@ -84,14 +150,119 @@ function draw() {
   textSize(60);
   textAlign(CENTER);
 
-  text(currentYear, windowWidth/2, windowHeight/2);
+  text(currentYear, windowWidth / 2, windowHeight / 2);
 
   pop();
 
   // DRAW CUSTOM SLIDER
   drawYearSlider();
 
+  // DRAW DAY / NIGHT BUTTON
+  drawToggleButton();
+
 }
+
+
+// DAY / NIGHT TOGGLE BUTTON //////////////////////////////////////////////
+
+
+
+function drawToggleButton() {
+
+  let x = width - toggleWidth - toggleMargin;
+  let y = toggleMargin;
+
+  // ADAPT ICON SIZE TO BUTTON HEIGHT
+  let iconSize = toggleHeight * 0.38;
+  let rayInner = iconSize * 0.65;
+  let rayOuter = iconSize * 0.95;
+  let rayWeight = iconSize * 0.12;
+
+  // ICON POSITION
+  let iconX = x + toggleHeight * 0.5;
+  let iconY = y + toggleHeight / 2;
+
+  push();
+
+  // BUTTON BACKGROUND
+  noStroke();
+  fill(creamWindow);
+
+  rect(
+    x, y,
+    toggleWidth,
+    toggleHeight,
+    25
+  );
+
+
+  // SHOW SUN IN NIGHT MODE
+  if (isDay === false) {
+
+    // SUN RAYS
+    stroke(yellowWindow);
+    strokeWeight(rayWeight);
+
+    for (let angle = 0; angle < TWO_PI; angle += PI / 4) {
+
+      let x1 = iconX + cos(angle) * rayInner;
+      let y1 = iconY + sin(angle) * rayInner;
+
+      let x2 = iconX + cos(angle) * rayOuter;
+      let y2 = iconY + sin(angle) * rayOuter;
+
+      line(x1, y1, x2, y2);
+
+    }
+
+    // SUN
+    noStroke();
+    fill(yellowWindow);
+
+    circle(iconX, iconY, iconSize);
+
+  }
+
+
+  // SHOW MOON IN DAY MODE
+  else {
+
+    noStroke();
+
+    // MOON
+    fill(yellowWindow);
+
+    circle(iconX, iconY, iconSize * 1.3);
+
+    // CUT OUT PART OF THE CIRCLE
+    fill(creamWindow);
+
+    circle(
+      iconX + iconSize * 0.45,
+      iconY - iconSize * 0.3,
+      iconSize * 1.15
+    );
+
+  }
+
+
+  // BUTTON TEXT
+  fill(bg);
+  noStroke();
+
+  textSize(toggleHeight *0.28);
+  textAlign(LEFT, CENTER);
+
+  if (isDay === false) {
+    text("DAY", x + toggleHeight * 1.1, iconY);
+  } else {
+    text("NIGHT", x + toggleHeight * 1.1, iconY);
+  }
+
+  pop();
+
+}
+
 
 
 // CUSTOM YEAR SLIDER //////////////////////////////////////////////
@@ -99,10 +270,8 @@ function draw() {
 
 function drawYearSlider() {
 
-  // SLIDER POSITION
   let y = height - sliderY;
 
-  // CALCULATE CIRCLE POSITION FROM CURRENT YEAR
   let sliderPosition = map(
     currentYear,
     2000,
@@ -128,7 +297,7 @@ function drawYearSlider() {
   noStroke();
   fill(sliderCircleColour);
 
-  circle(sliderPosition, y, sliderCircleSize );
+  circle(sliderPosition, y, sliderCircleSize);
 
   pop();
 
@@ -140,17 +309,29 @@ function drawYearSlider() {
 
 function mousePressed() {
 
+  // CHECK DAY / NIGHT BUTTON FIRST
+  let buttonX = width - toggleWidth - toggleMargin;
+  let buttonY = toggleMargin;
+
+  if (
+    mouseX >= buttonX &&
+    mouseX <= buttonX + toggleWidth &&
+    mouseY >= buttonY &&
+    mouseY <= buttonY + toggleHeight
+  ) {
+
+    isDay = !isDay;
+
+    setColours();
+
+    return;
+
+  }
+
+
+  // CHECK SLIDER
   let y = height - sliderY;
 
-  let sliderPosition = map(
-    currentYear,
-    2000,
-    2023,
-    sliderStart,
-    sliderEnd
-  );
-
-  // CHECK IF MOUSE IS CLOSE TO THE SLIDER
   if (
     mouseX >= sliderStart - sliderCircleSize &&
     mouseX <= sliderEnd + sliderCircleSize &&
@@ -217,7 +398,6 @@ function updateSliderYear() {
 // CREATE RESPONSIVE CITY //////////////////////////////////////////////
 
 
-
 function createCity() {
 
   buildings = [];
@@ -279,23 +459,28 @@ function createCity() {
 }
 
 
-
-
-// BUILDING FUNCTION//////////////////////////////////////////////
+// BUILDING FUNCTION //////////////////////////////////////////////
 
 
 function addBuilding(x, y, w, h, colour, cols, rows) {
 
   let b = {
+
     x: x,
     y: y,
     w: w,
     h: h,
+
     colour: colour,
+
+    // REMEMBER BUILDING TYPE
+    isBlue: colour === blueBuilding,
+
     cols: cols,
     rows: rows,
 
     windows: []
+
   };
 
 
@@ -323,16 +508,14 @@ function addBuilding(x, y, w, h, colour, cols, rows) {
       let wx = startX + col * (windowW + gapX);
       let wy = startY + row * (windowH + gapY);
 
-      // PLACEHOLDER SOLAR YEAR
-      let solarYear = null;
-
       b.windows.push({
 
         x: wx,
         y: wy,
         w: windowW,
         h: windowH,
-        solarYear: solarYear
+
+        solarYear: null
 
       });
 
@@ -345,7 +528,7 @@ function addBuilding(x, y, w, h, colour, cols, rows) {
 }
 
 
-// DRAW BUILDING//////////////////////////////////////////////
+// DRAW BUILDING //////////////////////////////////////////////
 
 
 function drawBuilding(b) {
@@ -373,8 +556,7 @@ function drawBuilding(b) {
 }
 
 
-
-// DRAW WINDOW//////////////////////////////////////////////
+// DRAW WINDOW //////////////////////////////////////////////
 
 
 function drawWindow(b, win) {
@@ -419,7 +601,7 @@ function drawWindow(b, win) {
 }
 
 
-// UPDATE SOLAR WINDOWS//////////////////////////////////////////////
+// UPDATE SOLAR WINDOWS //////////////////////////////////////////////
 
 
 function updateSolarWindows() {
@@ -452,8 +634,7 @@ function updateSolarWindows() {
 }
 
 
-
-// RESIZE//////////////////////////////////////////////
+// RESIZE //////////////////////////////////////////////
 
 
 function windowResized() {
