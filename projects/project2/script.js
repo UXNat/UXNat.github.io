@@ -168,6 +168,7 @@ async function setup() {
 
 // DRAW //////////////////////////////////////////////
 
+
 function draw() {
 
   // AUTOMATIC TIME PROGRESSION
@@ -200,6 +201,9 @@ function draw() {
   // BACKGROUND
   background(bg);
 
+  // DRAW SUN AND MOON
+  drawCelestialBodies();
+
   // DRAW BUILDINGS
   for (let b of buildings) {
     drawBuilding(b);
@@ -209,6 +213,139 @@ function draw() {
   drawClock();
 
 }
+
+
+
+
+
+// SUN AND MOON //////////////////////////////////////////////
+
+function drawCelestialBodies() {
+
+  // SUN AND MOON MOVE IN A CONTINUOUS CIRCLE
+
+  // SUN POSITION
+  // 06:00 = RIGHT
+  // 12:00 = TOP
+  // 18:00 = LEFT
+  // 00:00 = BOTTOM
+
+  let sunX = map(
+    simulatedTime,
+    6,
+    18,
+    width - 40,
+    40
+  );
+
+  let sunY = 165 - sin(
+    map(simulatedTime, 6, 18, 0, PI)
+  ) * 100;
+
+
+  // MOON POSITION
+  // ALWAYS OPPOSITE THE SUN
+  // 18:00 = RIGHT
+  // 00:00 = TOP
+  // 06:00 = LEFT
+
+  let moonX;
+  let moonY;
+
+  if (simulatedTime >= 18) {
+
+    moonX = map(
+      simulatedTime,
+      18,
+      30,
+      width - 40,
+      40
+    );
+
+    moonY = 165 - sin(
+      map(simulatedTime, 18, 30, 0, PI)
+    ) * 100;
+
+  } else {
+
+    moonX = map(
+      simulatedTime,
+      -6,
+      6,
+      width - 40,
+      40
+    );
+
+    moonY = 165 - sin(
+      map(simulatedTime, -6, 6, 0, PI)
+    ) * 100;
+
+  }
+
+
+  // DRAW SUN DURING DAYTIME
+
+  if (simulatedTime >= 6 && simulatedTime < 18) {
+
+    push();
+
+    // SUN RAYS
+    stroke("#F5BD55");
+    strokeWeight(3);
+
+    for (let i = 0; i < 8; i++) {
+
+      let angle = TWO_PI / 8 * i;
+
+      let x1 = sunX + cos(angle) * 23;
+      let y1 = sunY + sin(angle) * 23;
+
+      let x2 = sunX + cos(angle) * 32;
+      let y2 = sunY + sin(angle) * 32;
+
+      line(x1, y1, x2, y2);
+
+    }
+
+    // SUN
+    noStroke();
+    fill("#F5BD55");
+
+    circle(sunX, sunY, 38);
+
+    pop();
+
+  }
+
+
+  // DRAW MOON DURING NIGHTTIME
+
+  else {
+
+    push();
+
+    // MOON
+    noStroke();
+    fill("#F0D39A");
+
+    circle(moonX, moonY, 38);
+
+    // CREATE CRESCENT SHAPE
+    fill(bg);
+
+    circle(
+      moonX + 12,
+      moonY - 9,
+      34
+    );
+
+    pop();
+
+  }
+
+}
+
+
 
 
 // CLOCK //////////////////////////////////////////////
