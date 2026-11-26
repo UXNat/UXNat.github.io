@@ -408,30 +408,29 @@ function drawClock() {
   }
 
 
-  // CLOCK NUMBERS
+   // CLOCK NUMBERS
   noStroke();
   fill(creamWindow);
 
   textAlign(CENTER, CENTER);
   textSize(10 * 2);
 
-  // 12 AT THE TOP
-  text("12", clockX, clockY - clockRadius + 17);
+  // 12 TOP
+  text("12", clockX, clockY - clockRadius + 27);
 
-  // 3 ON THE RIGHT
-  text("3", clockX + clockRadius - 16, clockY);
+  // 3 RIGHT
+  text("3", clockX + clockRadius - 27, clockY);
 
-  // 6 AT THE BOTTOM
-  text("6", clockX, clockY + clockRadius - 17);
+  // 6 BOTTOM
+  text("6", clockX, clockY + clockRadius - 27);
 
-  // 9 ON THE LEFT
-  text("9", clockX - clockRadius + 16, clockY);
-
+  // 9 LEFT
+  text("9", clockX - clockRadius + 27, clockY);
 
   // CLOCK HAND //////////////////////////////////////////////
 
-  // CONVERT 24-HOUR TIME INTO 12-HOUR TIME
-  // THE HAND REPEATS ITS ROTATION AFTER 12 HOURS
+  // 24-H INTO 12-H
+  // HAND REPEATS ITS ROTATION AFTER 12 HOURS
 
   let clockHour = simulatedTime % 12;
 
@@ -480,23 +479,23 @@ function drawClock() {
   text(
     timeText,
     clockX,
-    clockY + clockRadius + 20
+    clockY + clockRadius + 50
   );
 
 
   // AM / PM LABEL
-  textSize(13);
+  textSize(25);
 
   if (simulatedTime < 12) {
-    text("AM", clockX, clockY + clockRadius + 43);
+    text("AM", clockX, clockY + clockRadius + 78);
   } else {
-    text("PM", clockX, clockY + clockRadius + 43);
+    text("PM", clockX, clockY + clockRadius + 78);
   }
 
 
   // AUTO / MANUAL BUTTON
   let buttonX = clockX - clockButtonWidth / 2;
-  let buttonY = clockY + clockRadius + 60;
+  let buttonY = clockY + clockRadius + 100;
 
   noStroke();
   fill(creamWindow);
@@ -534,7 +533,7 @@ function mousePressed() {
 
   // CHECK AUTO BUTTON
   let buttonX = clockX - clockButtonWidth / 2;
-  let buttonY = clockY + clockRadius + 60;
+  let buttonY = clockY + clockRadius + 100;
 
   if (
     mouseX >= buttonX &&
