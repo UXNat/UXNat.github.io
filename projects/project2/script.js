@@ -592,8 +592,8 @@ function createCity() {
     allWindows = [];
 
     // CITY AREA
-    let cityTop = 205;
-    let cityBottom = 160;
+    let cityTop = 300;
+    let cityBottom = 30;
 
     let cityHeight = height - cityTop - cityBottom;
 
