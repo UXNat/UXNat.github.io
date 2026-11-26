@@ -72,8 +72,19 @@ let six_seven_counter_hint = 0;
 
 let volume_nr = 0.5
 
+let jumpscare_img;
+let scream;
+
+let jumpscare_active = false;
+let jumpscare_start = 0;
+let previous_jumpscare = -1;
+
+let boo_hint_counter = 0;
+
 function preload() {
     rickroll = loadSound("Voicy_Rickroll (1).mp3");
+    jumpscare_img = loadImage("jumpscare.webp");
+    scream = loadSound("scream.mp3");
 }
 
 async function setup() {
@@ -387,6 +398,45 @@ function draw() {
     }
 
 
+            // JUMPSCARE EASTER EGG
+    let jumpscare = text_a.lastIndexOf("boo");
+
+    // START JUMPSCARE ONLY WHEN BOO IS NEW
+    if (jumpscare != -1 && jumpscare != previous_jumpscare) {
+
+        jumpscare_active = true;
+        boo_hint_counter++;
+        jumpscare_start = frame_counter;
+
+        // PLAY SCREAM SOUND
+        scream.stop();
+        scream.play();
+
+        previous_jumpscare = jumpscare;
+    }
+
+    // RESET WHEN BOO IS DELETED
+    if (jumpscare == -1) {
+        previous_jumpscare = -1;
+    }
+
+    // SHOW JUMPSCARE FOR 3 SECONDS
+    if (jumpscare_active) {
+
+        if (frame_counter - jumpscare_start < 3) {
+
+            imageMode(CENTER);
+            image(jumpscare_img, 0, 0, windowWidth, windowHeight);
+
+        } else {
+
+            jumpscare_active = false;
+        }
+    }
+        
+
+
+
 
 
     // EASTER EGGS COUNTER
@@ -406,7 +456,7 @@ function draw() {
     // HINTS
 
     // CLICK
-    if (frame_counter >= 60 && mouse_clicked < 2) {
+    if (frame_counter >= 30 && mouse_clicked < 2) {
 
         fill(255, 0, 0)
         textSize(typed_size / 1.5);
@@ -416,7 +466,7 @@ function draw() {
 
 
     // WRITE COLOR
-    if (frame_counter >= 90 && color_changed < 2) {
+    if (frame_counter >= 45 && color_changed < 1) {
 
         fill(255, 0, 0)
         textSize(typed_size / 1.5);
@@ -424,9 +474,18 @@ function draw() {
 
     }
 
+    // WRITE COLOR
+    if (frame_counter >= 45 && color_changed >= 1 && color_changed < 2) {
+
+        fill(255, 0, 0)
+        textSize(typed_size / 1.5);
+        text("the sky is...", 0, 3 * typed_size + 10);
+
+    }
+
 
     // MAKE BIGGER/SMALLER
-    if (frame_counter >= 120 && size_counter < 1) {
+    if (frame_counter >= 60 && size_counter < 1) {
 
         fill(255, 0, 0)
         textSize(typed_size / 1.5);
@@ -435,7 +494,7 @@ function draw() {
     }
 
     // ENTER
-    if (frame_counter >= 150 && enter_counter_hints < 1) {
+    if (frame_counter >= 75 && enter_counter_hints < 1) {
 
         fill(255, 0, 0)
         textSize(typed_size / 1.5);
@@ -444,7 +503,7 @@ function draw() {
     }
 
     // ENTER
-    if (frame_counter >= 180 && rickroll_counter_hint < 1) {
+    if (frame_counter >= 110 && rickroll_counter_hint < 1) {
 
         fill(255, 0, 0)
         textSize(typed_size / 1.5);
@@ -454,11 +513,21 @@ function draw() {
 
 
     // ENTER
-    if (frame_counter >= 210 && six_seven_counter_hint < 1) {
+    if (frame_counter >= 130 && six_seven_counter_hint < 1) {
 
         fill(255, 0, 0)
         textSize(typed_size / 1.5);
         text("whats the best meme on earth?", 0, 7 * typed_size + 10);
+
+    }
+
+
+    // BOO
+    if (frame_counter >= 150 && boo_hint_counter < 1) {
+
+        fill(255, 0, 0)
+        textSize(typed_size / 1.5);
+        text("scare me.", 0, 7 * typed_size + 10);
 
     }
 
