@@ -23,7 +23,7 @@ let capacities = [];
 
 // SLIDER POSITION
 let sliderMargin = 50;
-let sliderY = 155;
+let sliderY = 125;
 
 // SLIDER APPEARANCE
 let sliderLineWeight = 6;
@@ -217,22 +217,29 @@ function updateSliderYear() {
 // CREATE RESPONSIVE CITY //////////////////////////////////////////////
 
 
+
 function createCity() {
 
   buildings = [];
   allWindows = [];
 
+  // CITY AREA
+  let cityTop = 80;
+  let cityBottom = 220;
+
+  let cityHeight = height - cityTop - cityBottom;
+
   // HOUSE CELLS
-  let cellW = 260+100;
-  let cellH = 240+100;
+  let cellW = 260 + 100;
+  let cellH = 240 + 100;
 
   // CHECK HOW MANY HOUSES FIT
   let columns = ceil(width / cellW);
-  let rows = ceil(height / cellH);
+  let rows = ceil(cityHeight / cellH);
 
-  // ADAPT SPACING TO SCREEN SIZE
+  // ADAPT SPACING TO CITY AREA
   let actualCellW = width / columns;
-  let actualCellH = height / rows;
+  let actualCellH = cityHeight / rows;
 
 
   for (let row = 0; row < rows; row++) {
@@ -248,7 +255,7 @@ function createCity() {
       let h = (actualCellH - 28) * heightVariation;
       let w = actualCellW - 12;
 
-      let y = row * actualCellH + actualCellH - h - 10;
+      let y = cityTop + row * actualCellH + actualCellH - h - 10;
 
       // VARY BUILDING COLOURS
       let colour;
@@ -270,6 +277,7 @@ function createCity() {
   }
 
 }
+
 
 
 
