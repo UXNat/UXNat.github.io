@@ -70,6 +70,8 @@ let rickroll_counter_hint = 0;
 
 let six_seven_counter_hint = 0;
 
+let volume_nr = 0.5
+
 function preload() {
     rickroll = loadSound("Voicy_Rickroll (1).mp3");
 }
@@ -121,12 +123,13 @@ function draw() {
     let text_a = typed_letters.join("");
 
 
-     // RICKROLL EASTER EGG
+    // RICKROLL EASTER EGG
     let rickroll_count = text_a.split("give you up").length - 1;
 
     if (rickroll_count > rickroll_counted) {
 
         rickroll.stop();
+        rickroll.setVolume(volume_nr);
         rickroll.play();
 
         rickroll_counted = rickroll_count;
@@ -167,97 +170,97 @@ function draw() {
 
 
     // CHECK IF A NEW COLOR WAS TYPED
-    
-        if (last_color_position == white_position && white_position != -1) {
-            aktuelle_farbe = '#FDFDFB';
-            color_changed++;
-            white_discovered++
+
+    if (last_color_position == white_position && white_position != -1) {
+        aktuelle_farbe = '#FDFDFB';
+        color_changed++;
+        white_discovered++
+    }
+    else if (last_color_position == blue_position && blue_position != -1) {
+        aktuelle_farbe = '#8FD0F2';
+        color_changed++;
+
+        blue_discovered++
+    }
+    else if (last_color_position == red_position && red_position != -1) {
+        aktuelle_farbe = '#E4432A';
+        color_changed++;
+
+        red_discovered++
+    }
+    else if (last_color_position == yellow_position && yellow_position != -1) {
+        aktuelle_farbe = '#F6E27A';
+        color_changed++;
+
+        yellow_discovered++
+    }
+    else if (last_color_position == green_position && green_position != -1) {
+        aktuelle_farbe = '#93C572';
+        color_changed++;
+
+        green_discovered++
+    }
+    else if (last_color_position == purple_position && purple_position != -1) {
+        aktuelle_farbe = '#B75FCB';
+        color_changed++;
+
+        purple_discovered++
+    }
+    else if (last_color_position == orange_position && orange_position != -1) {
+        aktuelle_farbe = '#FFB347';
+        color_changed++;
+
+        orange_discovered++
+    }
+    else if (last_color_position == pink_position && pink_position != -1) {
+        aktuelle_farbe = '#ffd1dc';
+        color_changed++;
+
+        pink_discovered++
+    }
+
+
+    if (white_discovered == 1 || red_discovered == 1 || blue_discovered == 1 || yellow_discovered == 1 || green_discovered == 1 || purple_discovered == 1 || pink_discovered == 1 || orange_discovered == 1) {
+        easter_eggs++
+    }
+
+
+    // CHECK IF BIGGER OR SMALLER WAS TYPED
+    let lower_text = text_a.toLowerCase();
+
+    let bigger_position = Math.max(
+        lower_text.lastIndexOf("bigger"),
+        lower_text.lastIndexOf("big")
+    );
+
+    let smaller_position = Math.max(
+        lower_text.lastIndexOf("smaller"),
+        lower_text.lastIndexOf("small")
+    );
+
+    let last_size_position = Math.max(
+        bigger_position,
+        smaller_position
+    );
+
+
+    // ONLY PROCESS A NEW SIZE COMMAND ONCE
+    if (last_size_position != last_processed_size_position && last_size_position != -1) {
+
+        if (last_size_position == bigger_position) {
+            typed_size = typed_size + 20;
+            size_counter++;
+            bigger_discovered++;
         }
-        else if (last_color_position == blue_position && blue_position != -1) {
-            aktuelle_farbe = '#8FD0F2';
-            color_changed++;
-            
-            blue_discovered++
-        }
-        else if (last_color_position == red_position && red_position != -1) {
-            aktuelle_farbe = '#E4432A';
-            color_changed++;
-            
-            red_discovered++
-        }
-        else if (last_color_position == yellow_position && yellow_position != -1) {
-            aktuelle_farbe = '#F6E27A';
-            color_changed++;
-            
-            yellow_discovered++
-        }
-        else if (last_color_position == green_position && green_position != -1) {
-            aktuelle_farbe = '#93C572';
-            color_changed++;
-           
-            green_discovered++
-        }
-        else if (last_color_position == purple_position && purple_position != -1) {
-            aktuelle_farbe = '#B75FCB';
-            color_changed++;
-           
-            purple_discovered++
-        }
-        else if (last_color_position == orange_position && orange_position != -1) {
-            aktuelle_farbe = '#FFB347';
-            color_changed++;
-            
-            orange_discovered++
-        }
-        else if (last_color_position == pink_position && pink_position != -1) {
-            aktuelle_farbe = '#ffd1dc';
-            color_changed++;
-            
-            pink_discovered++
+
+        else if (last_size_position == smaller_position) {
+            typed_size = typed_size - 20;
+            size_counter++;
+            smaller_discovered++;
         }
 
-        
-        if (white_discovered == 1 || red_discovered == 1 || blue_discovered == 1 || yellow_discovered == 1 || green_discovered == 1 || purple_discovered == 1 || pink_discovered == 1 || orange_discovered == 1) {
-            easter_eggs++
-        }
-
-
-            // CHECK IF BIGGER OR SMALLER WAS TYPED
-        let lower_text = text_a.toLowerCase();
-
-        let bigger_position = Math.max(
-            lower_text.lastIndexOf("bigger"),
-            lower_text.lastIndexOf("big")
-        );
-
-        let smaller_position = Math.max(
-            lower_text.lastIndexOf("smaller"),
-            lower_text.lastIndexOf("small")
-        );
-
-        let last_size_position = Math.max(
-            bigger_position,
-            smaller_position
-        );
-
-
-        // ONLY PROCESS A NEW SIZE COMMAND ONCE
-        if (last_size_position != last_processed_size_position && last_size_position != -1) {
-
-            if (last_size_position == bigger_position) {
-                typed_size = typed_size + 20;
-                size_counter++;
-                bigger_discovered++;
-            }
-
-            else if (last_size_position == smaller_position) {
-                typed_size = typed_size - 20;
-                size_counter++;
-                smaller_discovered++;
-            }
-
-            last_processed_size_position = last_size_position;
-        }
+        last_processed_size_position = last_size_position;
+    }
 
     /*if (bigger_discovered == 1 || smaller_discovered == 1) {
         easter_eggs++
@@ -265,13 +268,13 @@ function draw() {
 
 
     if (bigger_discovered == 1 && !bigger_counted) {
-    easter_eggs++;
-    bigger_counted = true;
+        easter_eggs++;
+        bigger_counted = true;
     }
 
     if (smaller_discovered == 1 && !smaller_counted) {
-    easter_eggs++;
-    smaller_counted = true;
+        easter_eggs++;
+        smaller_counted = true;
     }
 
 
@@ -332,7 +335,7 @@ function draw() {
     let cursor_x = textWidth(typed_letters[current_line]);
 
     let letter_height = textAscent() + textDescent();
-     let cursor_offset = 0;
+    let cursor_offset = 0;
 
     rectMode(CORNER);
 
@@ -352,43 +355,52 @@ function draw() {
     }
 
 
-    let six_seven = text_a.lastIndexOf("sixseven") ;
-    let six_seven2 = text_a.lastIndexOf("67") ;
-    let six_seven3 = text_a.lastIndexOf("six seven") ;
-    let six_seven4 = text_a.lastIndexOf("Six Seven") ;
+    let six_seven = text_a.lastIndexOf("sixseven");
+    let six_seven2 = text_a.lastIndexOf("67");
+    let six_seven3 = text_a.lastIndexOf("six seven");
+    let six_seven4 = text_a.lastIndexOf("Six Seven");
     let six_seven5 = text_a.lastIndexOf("Six seven");
     let six_seven6 = text_a.lastIndexOf("SIXSEVEN");
     let six_seven7 = text_a.lastIndexOf("SIX SEVEN");
 
 
-    if (six_seven != -1 || six_seven2 != -1|| six_seven3 != -1|| six_seven4 != -1|| six_seven5!= -1 || six_seven6!= -1 || six_seven7 != -1) {
-        
+    if (six_seven != -1 || six_seven2 != -1 || six_seven3 != -1 || six_seven4 != -1 || six_seven5 != -1 || six_seven6 != -1 || six_seven7 != -1) {
+
         six_seven_counter_hint++
         textSize(500)
-        text("67", random(0-windowWidth/2, windowWidth/2),random(0-windowWidth/2, windowWidth/2));
+        text("67", random(0 - windowWidth / 2, windowWidth / 2), random(0 - windowWidth / 2, windowWidth / 2));
         six_seven_discovered++
-       
-    if (six_seven_discovered == 1){
-        easter_eggs++;
-    }
-}
 
-    //let name = text_a.lastIndexOf("Nat") ;
+        if (six_seven_discovered == 1) {
+            easter_eggs++;
+        }
+    }
+
+
+
+
+    let stop = text_a.lastIndexOf("stop");
+
+    if (stop != -1 && volume_nr < 1) {
+        volume_nr += 0.1;
+        rickroll.setVolume(volume_nr);
+    }
+
 
 
 
     // EASTER EGGS COUNTER
-        textSize(typed_size);
-        
-        text(`easter eggs collected: ${easter_eggs}/16`, 0, typed_size);
+    textSize(typed_size);
+
+    text(`easter eggs collected: ${easter_eggs}/16`, 0, typed_size);
 
 
     if (click_discovered == 1 && !click_counted) {
         easter_eggs++;
         click_counted = true;
-        }
+    }
 
-    
+
 
     ////////////////////////////////////////////////////////
     // HINTS
@@ -396,8 +408,8 @@ function draw() {
     // CLICK
     if (frame_counter >= 60 && mouse_clicked < 2) {
 
-        fill(255,0,0)
-        textSize(typed_size/1.5);
+        fill(255, 0, 0)
+        textSize(typed_size / 1.5);
         text("you rly didnt try clicking yet?", 0, 2 * typed_size + 10);
 
     }
@@ -406,8 +418,8 @@ function draw() {
     // WRITE COLOR
     if (frame_counter >= 90 && color_changed < 2) {
 
-        fill(255,0,0)
-        textSize(typed_size/1.5);
+        fill(255, 0, 0)
+        textSize(typed_size / 1.5);
         text("grass is...", 0, 3 * typed_size + 10);
 
     }
@@ -416,8 +428,8 @@ function draw() {
     // MAKE BIGGER/SMALLER
     if (frame_counter >= 120 && size_counter < 1) {
 
-        fill(255,0,0)
-        textSize(typed_size/1.5);
+        fill(255, 0, 0)
+        textSize(typed_size / 1.5);
         text("your grandma cant read this, its too SMALL", 0, 4 * typed_size + 10);
 
     }
@@ -425,31 +437,31 @@ function draw() {
     // ENTER
     if (frame_counter >= 150 && enter_counter_hints < 1) {
 
-        fill(255,0,0)
-        textSize(typed_size/1.5);
+        fill(255, 0, 0)
+        textSize(typed_size / 1.5);
         text("ENTER", 0, 5 * typed_size + 10);
- 
+
     }
- 
+
     // ENTER
     if (frame_counter >= 180 && rickroll_counter_hint < 1) {
 
-        fill(255,0,0)
-        textSize(typed_size/1.5);
+        fill(255, 0, 0)
+        textSize(typed_size / 1.5);
         text("'im never gonna...'", 0, 6 * typed_size + 10);
- 
+
     }
 
 
     // ENTER
     if (frame_counter >= 210 && six_seven_counter_hint < 1) {
 
-        fill(255,0,0)
-        textSize(typed_size/1.5);
+        fill(255, 0, 0)
+        textSize(typed_size / 1.5);
         text("whats the best meme on earth?", 0, 7 * typed_size + 10);
- 
+
     }
-    
+
 }
 
 

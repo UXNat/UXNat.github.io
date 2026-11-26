@@ -26,6 +26,7 @@ Be honest and specific.
 <!-- Include the key prompts you used, or a short summary of the back-and-forth. Be specific enough that someone could follow your process. -->
 
 - for this project I purely used it to explain some new functions like lastIndexOf() and Math.max/min so I can use them in my code, but I tried to code everything myself. When I did mistakes or the code didnt work, I asked it to explain why and help, not writing any code for me. My focus here was to really code myself and use what we learned.
+I did use it later to redefine when it should do something based on what was typed for lower/upper case letters, so that Blue, blue, BLUE, etc. would all trigger it.
 
 ### What was your own contribution?
 
