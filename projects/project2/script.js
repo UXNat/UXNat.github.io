@@ -1,17 +1,29 @@
 
-let currentYear = 2000;
-let previousYear = currentYear;
-
 let buildings = [];
 let allWindows = [];
 
-// DAY / NIGHT MODE //////////////////////////////////////////////
+// TIME //////////////////////////////////////////////
 
-// FALSE = NIGHT, TRUE = DAY
-let isDay = false;
+// CURRENT SIMULATED TIME (0-24)
+let simulatedTime = 0;
+
+// TRUE = AUTOMATIC, FALSE = MANUAL
+let isAutomatic = true;
+
+// HOW FAST TIME PASSES
+let timeSpeed = 0.006;
+
+// REMEMBER WHICH HOUR WAS LAST UPDATED
+let previousWindowHour = -1;
 
 
-// COLOURS (change automatically with mode)
+// DAYLIGHT //////////////////////////////////////////////
+
+let daylightAmount = 0;
+
+
+// COLOURS //////////////////////////////////////////////
+
 let bg;
 let darkBuilding;
 let blueBuilding;
@@ -21,37 +33,51 @@ let yellowWindow;
 let creamWindow;
 
 
-// APPLY COLOURS //////////////////////////////////////////////
+// SET COLOURS //////////////////////////////////////////////
 
 function setColours() {
 
-  if (isDay === false) {
+  // NIGHT COLOURS
+  let nightBg = color("#111326");
+  let nightBuilding = color("#1C1B30");
+  let nightBlue = color("#203B5D");
+  let nightRoof = color("#17243D");
+  let nightWindow = color("#101729");
+  let nightCream = color("#F0D39A");
 
-    // NIGHT COLOURS
-    bg = "#111326";
-    darkBuilding = "#1C1B30";
-    blueBuilding = "#203B5D";
-    roofColour = "#17243D";
-    darkWindow = "#101729";
-    yellowWindow = "#F5BD55";
-    creamWindow = "#F0D39A";
+  // DAY COLOURS
+  let dayBg = color("#DCE8E8");
+  let dayBuilding = color("#D9C7A5");
+  let dayBlue = color("#A9C5D1");
+  let dayRoof = color("#718D9B");
+  let dayWindow = color("#839BA4");
+  let dayCream = color("#304C5A");
 
-  } else {
+  // INTERPOLATE BETWEEN NIGHT AND DAY
+  bg = lerpColor(nightBg, dayBg, daylightAmount);
 
-    // DAY COLOURS
-    bg = "#DCE8E8";
-    darkBuilding = "#D9C7A5";
-    blueBuilding = "#A9C5D1";
-    roofColour = "#718D9B";
-    darkWindow = "#839BA4";
-    yellowWindow = "#F5BD55";
-    creamWindow = "#304C5A";
+  darkBuilding = lerpColor(
+    nightBuilding, dayBuilding, daylightAmount
+  );
 
-  }
+  blueBuilding = lerpColor(
+    nightBlue, dayBlue, daylightAmount
+  );
 
-  // SLIDER COLOURS
-  sliderLineColour = creamWindow;
-  sliderCircleColour = yellowWindow;
+  roofColour = lerpColor(
+    nightRoof, dayRoof, daylightAmount
+  );
+
+  darkWindow = lerpColor(
+    nightWindow, dayWindow, daylightAmount
+  );
+
+  creamWindow = lerpColor(
+    nightCream, dayCream, daylightAmount
+  );
+
+  // KEEP WINDOWS WARM
+  yellowWindow = color("#F5BD55");
 
   // UPDATE EXISTING BUILDINGS
   for (let b of buildings) {
@@ -67,73 +93,111 @@ function setColours() {
 }
 
 
+// CSV DATA //////////////////////////////////////////////
+
 let table;
-
-let years = [];
-let capacities = [];
+let hourData = [];
 
 
-// CUSTOM SLIDER //////////////////////////////////////////////
+// CLOCK //////////////////////////////////////////////
 
-// SLIDER POSITION
-let sliderMargin = 50;
-let sliderY = 125;
+// CLOCK SIZE
+let clockRadius = 48 * 2;
 
-// SLIDER APPEARANCE
-let sliderLineWeight = 6;
-let sliderCircleSize = 30;
+// CLOCK INTERACTION
+let draggingClock = false;
 
-let sliderLineColour;
-let sliderCircleColour;
-
-// SLIDER INTERACTION
-let sliderStart;
-let sliderEnd;
-
-let draggingSlider = false;
+// CLOCK BUTTON
+let clockButtonWidth = 76 * 2;
+let clockButtonHeight = 25 * 2;
 
 
-// DAY / NIGHT BUTTON //////////////////////////////////////////////
+// GET CLOCK POSITION //////////////////////////////////////////////
 
-// BUTTON POSITION
-let toggleWidth = 220;
-let toggleHeight = 92;
-let toggleMargin = 30;
+// USE THE SAME POSITION FOR DRAWING AND INTERACTION
+function getClockPosition() {
 
-
-async function setup() {
-
-  createCanvas(windowWidth, windowHeight);
-  noStroke();
-
-  setColours();
-
-  table = await loadTable("solar_data.csv", ";", "header");
-
-  // COPY CSV DATA INTO ARRAYS
-  for (let row = 0; row < table.getRowCount(); row++) {
-
-    years.push(table.getNum(row, "year"));
-
-    capacities.push(
-      table.getNum(row, "installed_solar_capacity_mwp")
-    );
-
-  }
-
-  createCity();
-
-  // SET SLIDER POSITION
-  sliderStart = sliderMargin;
-  sliderEnd = width - sliderMargin;
-
-  updateSolarWindows();
+  return {
+    x: width - clockRadius - 35,
+    y: clockRadius + 35
+  };
 
 }
 
 
+// SETUP //////////////////////////////////////////////
+
+async function setup() {
+
+  createCanvas(windowWidth, windowHeight);
+
+  noStroke();
+
+  // LOAD CSV
+  table = await loadTable(
+    "time_of_day_data.csv",
+    ";",
+    "header"
+  );
+
+  // COPY CSV DATA INTO ARRAY
+  for (let row = 0; row < table.getRowCount(); row++) {
+
+    let hour = table.getNum(row, "time");
+
+    hourData[hour] = {
+
+      awake: table.getNum(row, "awake"),
+
+      comeHome: table.getNum(row, "come_home"),
+
+      goToSleep: table.getNum(row, "go_to_sleep")
+
+    };
+
+  }
+
+  // CREATE CITY
+  createCity();
+
+  // INITIALISE WINDOWS
+  updateWindowStates();
+
+}
+
+
+// DRAW //////////////////////////////////////////////
+
 function draw() {
 
+  // AUTOMATIC TIME PROGRESSION
+  if (isAutomatic) {
+
+    simulatedTime += timeSpeed;
+
+    // LOOP BACK TO MIDNIGHT
+    if (simulatedTime >= 24) {
+      simulatedTime = 0;
+    }
+
+  }
+
+  // CALCULATE DAYLIGHT
+  daylightAmount = (
+    1 - cos(TWO_PI * simulatedTime / 24)
+  ) / 2;
+
+  // UPDATE COLOURS
+  setColours();
+
+  // UPDATE WINDOWS WHEN HOUR CHANGES
+  let currentHour = floor(simulatedTime);
+
+  if (currentHour !== previousWindowHour) {
+    updateWindowStates();
+  }
+
+  // BACKGROUND
   background(bg);
 
   // DRAW BUILDINGS
@@ -141,122 +205,180 @@ function draw() {
     drawBuilding(b);
   }
 
-  // DISPLAY CURRENT YEAR
-  push();
-
-  fill(creamWindow);
-  noStroke();
-
-  textSize(60);
-  textAlign(CENTER);
-
-  text(currentYear, windowWidth / 2, windowHeight / 2);
-
-  pop();
-
-  // DRAW CUSTOM SLIDER
-  drawYearSlider();
-
-  // DRAW DAY / NIGHT BUTTON
-  drawToggleButton();
+  // DRAW CLOCK
+  drawClock();
 
 }
 
 
-// DAY / NIGHT TOGGLE BUTTON //////////////////////////////////////////////
+// CLOCK //////////////////////////////////////////////
 
+function drawClock() {
 
+  // CLOCK POSITION
+  let position = getClockPosition();
 
-function drawToggleButton() {
-
-  let x = width - toggleWidth - toggleMargin;
-  let y = toggleMargin;
-
-  // ADAPT ICON SIZE TO BUTTON HEIGHT
-  let iconSize = toggleHeight * 0.38;
-  let rayInner = iconSize * 0.65;
-  let rayOuter = iconSize * 0.95;
-  let rayWeight = iconSize * 0.12;
-
-  // ICON POSITION
-  let iconX = x + toggleHeight * 0.5;
-  let iconY = y + toggleHeight / 2;
+  let clockX = position.x;
+  let clockY = position.y;
 
   push();
 
-  // BUTTON BACKGROUND
+  // CLOCK BACKGROUND
+  fill(bg);
+  stroke(creamWindow);
+  strokeWeight(2);
+
+  circle(
+    clockX,
+    clockY,
+    clockRadius * 2
+  );
+
+
+  // CLOCK TICKS
+  // 12 TICKS INSTEAD OF 24
+
+  for (let i = 0; i < 12; i++) {
+
+    let angle = map(
+      i,
+      0,
+      12,
+      -HALF_PI,
+      TWO_PI - HALF_PI
+    );
+
+    let tickLength = 5;
+
+    // MAKE 12, 3, 6 AND 9 MORE VISIBLE
+    if (i % 3 === 0) {
+      tickLength = 12;
+      strokeWeight(2);
+    } else {
+      strokeWeight(1);
+    }
+
+    let x1 = clockX + cos(angle) * (clockRadius - 3);
+    let y1 = clockY + sin(angle) * (clockRadius - 3);
+
+    let x2 = clockX + cos(angle) * (clockRadius - 3 - tickLength);
+    let y2 = clockY + sin(angle) * (clockRadius - 3 - tickLength);
+
+    stroke(creamWindow);
+
+    line(x1, y1, x2, y2);
+
+  }
+
+
+  // CLOCK NUMBERS
+  noStroke();
+  fill(creamWindow);
+
+  textAlign(CENTER, CENTER);
+  textSize(10 * 2);
+
+  // 12 AT THE TOP
+  text("12", clockX, clockY - clockRadius + 17);
+
+  // 3 ON THE RIGHT
+  text("3", clockX + clockRadius - 16, clockY);
+
+  // 6 AT THE BOTTOM
+  text("6", clockX, clockY + clockRadius - 17);
+
+  // 9 ON THE LEFT
+  text("9", clockX - clockRadius + 16, clockY);
+
+
+  // CLOCK HAND //////////////////////////////////////////////
+
+  // CONVERT 24-HOUR TIME INTO 12-HOUR TIME
+  // THE HAND REPEATS ITS ROTATION AFTER 12 HOURS
+
+  let clockHour = simulatedTime % 12;
+
+  let angle = map(
+    clockHour,
+    0,
+    12,
+    -HALF_PI,
+    TWO_PI - HALF_PI
+  );
+
+  let handLength = clockRadius * 0.65;
+
+  stroke(yellowWindow);
+  strokeWeight(4);
+
+  line(
+    clockX,
+    clockY,
+    clockX + cos(angle) * handLength,
+    clockY + sin(angle) * handLength
+  );
+
+
+  // CLOCK CENTRE
+  noStroke();
+  fill(yellowWindow);
+
+  circle(clockX, clockY, 9);
+
+
+  // DIGITAL TIME //////////////////////////////////////////////
+
+  fill(creamWindow);
+
+  textSize(21 * 2);
+  textAlign(CENTER, CENTER);
+
+  let hours = floor(simulatedTime);
+
+  let minutes = floor((simulatedTime - hours) * 60);
+
+  let timeText =
+    nf(hours, 2) + ":" + nf(minutes, 2);
+
+  text(
+    timeText,
+    clockX,
+    clockY + clockRadius + 20
+  );
+
+
+  // AM / PM LABEL
+  textSize(13);
+
+  if (simulatedTime < 12) {
+    text("AM", clockX, clockY + clockRadius + 43);
+  } else {
+    text("PM", clockX, clockY + clockRadius + 43);
+  }
+
+
+  // AUTO / MANUAL BUTTON
+  let buttonX = clockX - clockButtonWidth / 2;
+  let buttonY = clockY + clockRadius + 60;
+
   noStroke();
   fill(creamWindow);
 
   rect(
-    x, y,
-    toggleWidth,
-    toggleHeight,
-    25
+    buttonX,
+    buttonY,
+    clockButtonWidth,
+    clockButtonHeight,
+    10
   );
 
-
-  // SHOW SUN IN NIGHT MODE
-  if (isDay === false) {
-
-    // SUN RAYS
-    stroke(yellowWindow);
-    strokeWeight(rayWeight);
-
-    for (let angle = 0; angle < TWO_PI; angle += PI / 4) {
-
-      let x1 = iconX + cos(angle) * rayInner;
-      let y1 = iconY + sin(angle) * rayInner;
-
-      let x2 = iconX + cos(angle) * rayOuter;
-      let y2 = iconY + sin(angle) * rayOuter;
-
-      line(x1, y1, x2, y2);
-
-    }
-
-    // SUN
-    noStroke();
-    fill(yellowWindow);
-
-    circle(iconX, iconY, iconSize);
-
-  }
-
-
-  // SHOW MOON IN DAY MODE
-  else {
-
-    noStroke();
-
-    // MOON
-    fill(yellowWindow);
-
-    circle(iconX, iconY, iconSize * 1.3);
-
-    // CUT OUT PART OF THE CIRCLE
-    fill(creamWindow);
-
-    circle(
-      iconX + iconSize * 0.45,
-      iconY - iconSize * 0.3,
-      iconSize * 1.15
-    );
-
-  }
-
-
-  // BUTTON TEXT
   fill(bg);
-  noStroke();
+  textSize(12 * 2);
 
-  textSize(toggleHeight *0.28);
-  textAlign(LEFT, CENTER);
-
-  if (isDay === false) {
-    text("DAY", x + toggleHeight * 1.1, iconY);
+  if (isAutomatic) {
+    text("PAUSE", clockX, buttonY + clockButtonHeight / 2);
   } else {
-    text("NIGHT", x + toggleHeight * 1.1, iconY);
+    text("AUTO", clockX, buttonY + clockButtonHeight / 2);
   }
 
   pop();
@@ -264,83 +386,45 @@ function drawToggleButton() {
 }
 
 
-
-// CUSTOM YEAR SLIDER //////////////////////////////////////////////
-
-
-function drawYearSlider() {
-
-  let y = height - sliderY;
-
-  let sliderPosition = map(
-    currentYear,
-    2000,
-    2023,
-    sliderStart,
-    sliderEnd
-  );
-
-  push();
-
-  // DRAW SLIDER LINE
-  stroke(sliderLineColour);
-  strokeWeight(sliderLineWeight);
-
-  line(
-    sliderStart,
-    y,
-    sliderEnd,
-    y
-  );
-
-  // DRAW SLIDER CIRCLE
-  noStroke();
-  fill(sliderCircleColour);
-
-  circle(sliderPosition, y, sliderCircleSize);
-
-  pop();
-
-}
-
-
-// SLIDER MOUSE INTERACTION //////////////////////////////////////////////
-
+// CLOCK INTERACTION //////////////////////////////////////////////
 
 function mousePressed() {
 
-  // CHECK DAY / NIGHT BUTTON FIRST
-  let buttonX = width - toggleWidth - toggleMargin;
-  let buttonY = toggleMargin;
+  let position = getClockPosition();
+
+  let clockX = position.x;
+  let clockY = position.y;
+
+  // CHECK AUTO BUTTON
+  let buttonX = clockX - clockButtonWidth / 2;
+  let buttonY = clockY + clockRadius + 60;
 
   if (
     mouseX >= buttonX &&
-    mouseX <= buttonX + toggleWidth &&
+    mouseX <= buttonX + clockButtonWidth &&
     mouseY >= buttonY &&
-    mouseY <= buttonY + toggleHeight
+    mouseY <= buttonY + clockButtonHeight
   ) {
 
-    isDay = !isDay;
+    isAutomatic = !isAutomatic;
 
-    setColours();
+    draggingClock = false;
 
     return;
 
   }
 
 
-  // CHECK SLIDER
-  let y = height - sliderY;
-
+  // CHECK CLOCK FACE
   if (
-    mouseX >= sliderStart - sliderCircleSize &&
-    mouseX <= sliderEnd + sliderCircleSize &&
-    abs(mouseY - y) < sliderCircleSize
+    dist(mouseX, mouseY, clockX, clockY) <= clockRadius + 10
   ) {
 
-    draggingSlider = true;
+    draggingClock = true;
 
-    updateSliderYear();
+    isAutomatic = false;
+
+    updateTimeFromMouse();
 
   }
 
@@ -349,8 +433,8 @@ function mousePressed() {
 
 function mouseDragged() {
 
-  if (draggingSlider) {
-    updateSliderYear();
+  if (draggingClock) {
+    updateTimeFromMouse();
   }
 
 }
@@ -358,38 +442,60 @@ function mouseDragged() {
 
 function mouseReleased() {
 
-  draggingSlider = false;
+  draggingClock = false;
 
 }
 
 
-// UPDATE YEAR WHEN SLIDER MOVES //////////////////////////////////////////////
+// UPDATE TIME FROM CLOCK HAND //////////////////////////////////////////////
 
+function updateTimeFromMouse() {
 
-function updateSliderYear() {
+  let position = getClockPosition();
 
-  let newPosition = constrain(
-    mouseX,
-    sliderStart,
-    sliderEnd
+  let clockX = position.x;
+  let clockY = position.y;
+
+  // FIND ANGLE BETWEEN MOUSE AND CLOCK CENTRE
+  let angle = atan2(
+    mouseY - clockY,
+    mouseX - clockX
   );
 
-  let newYear = round(
-    map(
-      newPosition,
-      sliderStart,
-      sliderEnd,
-      2000,
-      2023
-    )
+  // MOVE ZERO TO THE TOP OF THE CLOCK
+  angle += HALF_PI;
+
+  // KEEP ANGLE BETWEEN 0 AND 360 DEGREES
+  if (angle < 0) {
+    angle += TWO_PI;
+  }
+
+  // CONVERT ANGLE INTO 12-HOUR TIME
+  let selectedHour = map(
+    angle,
+    0,
+    TWO_PI,
+    0,
+    12
   );
 
-  if (newYear !== currentYear) {
+  // KEEP THE CURRENT HALF OF THE DAY
+  // 00:00-12:00 = AM
+  // 12:00-24:00 = PM
 
-    currentYear = newYear;
+  let halfOfDay = 0;
 
-    updateSolarWindows();
+  if (simulatedTime >= 12) {
+    halfOfDay = 12;
+  }
 
+  simulatedTime = halfOfDay + selectedHour;
+
+  // UPDATE WINDOWS
+  let currentHour = floor(simulatedTime);
+
+  if (currentHour !== previousWindowHour) {
+    updateWindowStates();
   }
 
 }
@@ -397,15 +503,14 @@ function updateSliderYear() {
 
 // CREATE RESPONSIVE CITY //////////////////////////////////////////////
 
-
 function createCity() {
 
   buildings = [];
   allWindows = [];
 
   // CITY AREA
-  let cityTop = 80;
-  let cityBottom = 220;
+  let cityTop = 205;
+  let cityBottom = 160;
 
   let cityHeight = height - cityTop - cityBottom;
 
@@ -421,7 +526,6 @@ function createCity() {
   let actualCellW = width / columns;
   let actualCellH = cityHeight / rows;
 
-
   for (let row = 0; row < rows; row++) {
 
     for (let col = 0; col < columns; col++) {
@@ -430,14 +534,16 @@ function createCity() {
       let x = col * actualCellW + 6;
 
       // VARY HOUSE HEIGHTS
-      let heightVariation = 0.72 + ((col * 3 + row * 5) % 4) * 0.07;
+      let heightVariation =
+        0.72 + ((col * 3 + row * 5) % 4) * 0.07;
 
       let h = (actualCellH - 28) * heightVariation;
       let w = actualCellW - 12;
 
-      let y = cityTop + row * actualCellH + actualCellH - h - 10;
+      let y =
+        cityTop + row * actualCellH + actualCellH - h - 10;
 
-      // VARY BUILDING COLOURS
+      // VARY HOUSE COLOURS
       let colour;
 
       if ((row + col) % 3 === 0) {
@@ -454,13 +560,13 @@ function createCity() {
       );
 
     }
+
   }
 
 }
 
 
 // BUILDING FUNCTION //////////////////////////////////////////////
-
 
 function addBuilding(x, y, w, h, colour, cols, rows) {
 
@@ -483,24 +589,27 @@ function addBuilding(x, y, w, h, colour, cols, rows) {
 
   };
 
-
   // WINDOW DIMENSIONS
   let windowW = min(34, (w - 50) / cols);
   let windowH = min(38, (h - 65) / rows);
 
-
   // SPACING BETWEEN WINDOWS
-  let gapX = ((w - 50 - cols * windowW) / (cols - 1)) * 0.7;
-  let gapY = ((h - 65 - rows * windowH) / (rows - 1)) * 0.7;
+  let gapX =
+    ((w - 50 - cols * windowW) / (cols - 1)) * 0.7;
 
+  let gapY =
+    ((h - 65 - rows * windowH) / (rows - 1)) * 0.7;
 
   // CREATE WINDOWS
   for (let row = 0; row < rows; row++) {
 
     for (let col = 0; col < cols; col++) {
 
-      let totalW = cols * windowW + (cols - 1) * gapX;
-      let totalH = rows * windowH + (rows - 1) * gapY;
+      let totalW =
+        cols * windowW + (cols - 1) * gapX;
+
+      let totalH =
+        rows * windowH + (rows - 1) * gapY;
 
       let startX = (w - totalW) / 2;
       let startY = (h - totalH) / 2;
@@ -512,14 +621,17 @@ function addBuilding(x, y, w, h, colour, cols, rows) {
 
         x: wx,
         y: wy,
+
         w: windowW,
         h: windowH,
 
-        solarYear: null
+        // WINDOW STARTS OFF
+        isOn: false
 
       });
 
     }
+
   }
 
   buildings.push(b);
@@ -530,13 +642,17 @@ function addBuilding(x, y, w, h, colour, cols, rows) {
 
 // DRAW BUILDING //////////////////////////////////////////////
 
-
 function drawBuilding(b) {
 
   // BUILDING FACADE
   fill(b.colour);
-  rect(b.x, b.y, b.w, b.h);
 
+  rect(
+    b.x,
+    b.y,
+    b.w,
+    b.h
+  );
 
   // ROOF
   fill(roofColour);
@@ -547,17 +663,17 @@ function drawBuilding(b) {
     b.x + b.w, b.y
   );
 
-
   // WINDOWS
   for (let win of b.windows) {
+
     drawWindow(b, win);
+
   }
 
 }
 
 
 // DRAW WINDOW //////////////////////////////////////////////
-
 
 function drawWindow(b, win) {
 
@@ -567,16 +683,19 @@ function drawWindow(b, win) {
   // DEFAULT WINDOW COLOUR
   let windowColour = darkWindow;
 
-
-  // SOLAR-POWERED WINDOW
-  if (win.isSolar === true) {
+  // LIGHT ON
+  if (win.isOn === true) {
     windowColour = yellowWindow;
   }
 
   fill(windowColour);
 
-  rect(x, y, win.w, win.h);
-
+  rect(
+    x,
+    y,
+    win.w,
+    win.h
+  );
 
   // WINDOW DIVISIONS
   stroke(bg);
@@ -601,33 +720,135 @@ function drawWindow(b, win) {
 }
 
 
-// UPDATE SOLAR WINDOWS //////////////////////////////////////////////
+// WINDOW SIMULATION //////////////////////////////////////////////
+
+// REBUILD WINDOW STATES FOR THE SELECTED HOUR
+
+function updateWindowStates() {
+
+  // RESET ALL WINDOWS
+  // START WITH 50% OF WINDOWS ON
+  // THIS REPRESENTS PEOPLE WHO ARE STILL AWAKE AT MIDNIGHT
+
+  randomSeed(42);
+
+  for (let win of allWindows) {
+
+    win.isOn = random() < 0.5;
+
+  }
+
+  // APPLY THE EVENTS FROM 24:00
+  // THIS IS THE END OF THE PREVIOUS DAY
+
+  applyHourlyEvents(24);
+
+  // APPLY ALL EVENTS UP TO THE CURRENT HOUR
+  for (let hour = 0; hour <= floor(simulatedTime); hour++) {
+
+    applyHourlyEvents(hour);
+
+  }
+
+  // REMEMBER CURRENT HOUR
+  previousWindowHour = floor(simulatedTime);
+
+}
 
 
-function updateSolarWindows() {
+// APPLY CSV EVENTS FOR ONE HOUR //////////////////////////////////////////////
 
-  // FIND THE CORRECT YEAR IN THE CSV
-  let yearIndex = years.indexOf(currentYear);
+function applyHourlyEvents(hour) {
 
-  // GET SOLAR CAPACITY FOR THAT YEAR
-  let solarCapacity = capacities[yearIndex];
+  let data = hourData[hour];
 
-  // GET MAXIMUM CAPACITY FROM THE DATA
-  let maxCapacity = max(capacities);
+  if (!data) {
+    return;
+  }
 
-  // CALCULATE HOW MANY WINDOWS SHOULD BE YELLOW
-  let solarWindowCount = round(
-    map(solarCapacity, 0, maxCapacity, 0, allWindows.length)
+  // USE THE SAME RANDOM SELECTION EACH TIME
+  randomSeed(1000 + hour);
+
+  // PEOPLE WAKE UP AND LEAVE
+  // WINDOWS TURN OFF
+
+  changeRandomWindows(
+    data.awake,
+    false
   );
 
-  // TURN THE CORRECT NUMBER OF WINDOWS ON/OFF
-  for (let i = 0; i < allWindows.length; i++) {
+  // PEOPLE COME HOME
+  // WINDOWS TURN ON
 
-    if (i < solarWindowCount) {
-      allWindows[i].isSolar = true;
-    } else {
-      allWindows[i].isSolar = false;
+  changeRandomWindows(
+    data.comeHome,
+    true
+  );
+
+  // PEOPLE GO TO SLEEP
+  // WINDOWS TURN OFF
+
+  changeRandomWindows(
+    data.goToSleep,
+    false
+  );
+
+}
+
+
+// CHANGE RANDOM WINDOWS //////////////////////////////////////////////
+
+function changeRandomWindows(amount, turnOn) {
+
+  // FIND WINDOWS THAT CAN CHANGE STATE
+  let candidates = [];
+
+  for (let win of allWindows) {
+
+    if (win.isOn !== turnOn) {
+      candidates.push(win);
     }
+
+  }
+
+  // CSV NUMBERS REPRESENT EVENTS PER 100 PEOPLE
+  // CONVERT THEM INTO A PROPORTION OF OUR WINDOWS
+
+  let numberOfWindows = round(
+    (amount / 100) * allWindows.length
+  );
+
+  // RANDOMISE THE CANDIDATES
+  shuffleWindows(candidates);
+
+  // CHANGE THE SELECTED WINDOWS
+  for (
+    let i = 0;
+    i < min(numberOfWindows, candidates.length);
+    i++
+  ) {
+
+    candidates[i].isOn = turnOn;
+
+  }
+
+}
+
+
+// RANDOMISE ARRAY //////////////////////////////////////////////
+
+function shuffleWindows(array) {
+
+  for (let i = array.length - 1; i > 0; i--) {
+
+    let j = floor(random(i + 1));
+
+    // SWAP TWO POSITIONS
+    let temp = array[i];
+
+    array[i] = array[j];
+
+    array[j] = temp;
 
   }
 
@@ -636,16 +857,15 @@ function updateSolarWindows() {
 
 // RESIZE //////////////////////////////////////////////
 
-
 function windowResized() {
 
   resizeCanvas(windowWidth, windowHeight);
 
   createCity();
 
-  sliderStart = sliderMargin;
-  sliderEnd = width - sliderMargin;
+  // REBUILD WINDOW STATES AFTER RESIZING
+  previousWindowHour = -1;
 
-  updateSolarWindows();
+  updateWindowStates();
 
 }
