@@ -83,6 +83,8 @@ let previous_jumpscare = -1;
 let boo_hint_counter = 0;
 
 let italicOrBold_counter_hints= 0;
+let italic_counter_hints =0;
+let bold_counter_hints =0;
 
 function preload() {
     rickroll = loadSound("Voicy_Rickroll (1).mp3");
@@ -154,10 +156,13 @@ function draw() {
     if (last_style_position == italic_position && italic_position != -1) {
         text_style_mode = "italic";
          italicOrBold_counter_hints++
+         italic_counter_hints++
+         
     }
     else if (last_style_position == bold_position && bold_position != -1) {
         text_style_mode = "bold";
          italicOrBold_counter_hints++
+         bold_counter_hints++
     }
     else if (last_style_position == normal_position && normal_position != -1) {
         text_style_mode = "normal";
@@ -276,6 +281,13 @@ function draw() {
         easter_eggs++
     }
 
+    if (bold_counter_hints >= 1 && bold_counter_hints<2){
+          easter_eggs++
+    }
+
+    if (italic_counter_hints >= 1 && italic_counter_hints<2){
+          easter_eggs++
+    }
 
     // CHECK IF BIGGER OR SMALLER WAS TYPED
     let lower_text = text_a.toLowerCase();
@@ -483,7 +495,7 @@ function draw() {
     // EASTER EGGS COUNTER
     textSize(typed_size);
 
-    text(`easter eggs collected: ${easter_eggs}/16`, 0, typed_size);
+    text(`easter eggs collected: ${easter_eggs}/18`, 0, typed_size);
 
 
     if (click_discovered == 1 && !click_counted) {
@@ -543,8 +555,6 @@ function draw() {
     }
 
     
-
-
     // ENTER
     if (frame_counter >= 80 && enter_counter_hints < 1) {
 

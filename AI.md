@@ -27,7 +27,8 @@ Be honest and specific.
 
 - for this project I purely used it to explain some new functions like lastIndexOf() and Math.max/min so I can use them in my code, but I tried to code everything myself. When I did mistakes or the code didnt work, I asked it to explain why and help, not writing any code for me. My focus here was to really code myself and use what we learned. 
 I mostly needed help for the checks for the easter egg, sometimes i put it in the wrong spot or couldn't figure out how to make it happen only once when it its the draw event instead of x-times/sec.
-I also asked it for hekp to implement sound!
+
+I did ask it for help to implement sound and add the font types for me (italic/bold) to save some time.
 
 ### What was your own contribution?
 
@@ -39,7 +40,7 @@ I also asked it for hekp to implement sound!
 
 <!-- One or two sentences: what worked well, what didn't, and what you learned about using AI as a creative tool. -->
 
-- it worked amazing at explaining/ finding mistakes in such a simple code. it quickly understood how much i already knew and what i could use (that was also simple to use) to help guide me in the right direction. It also gave me ideas to structure my code differently; i never realized we could do "absätze" between lines and it would work too! sometimes that really helped to keep a good overview. 
+- it worked amazingly for explaining/ finding mistakes in such a simple code. It quickly understood how much I already knew and what I could use (that was also simple enough to use for me) to help guide me in the right direction. It also gave me ideas to structure my code differently; i never realized we could do "absätze" between lines and it would work too! sometimes that really helped to keep a good overview. 
 
 
 ## Project 2
@@ -50,18 +51,19 @@ I also asked it for hekp to implement sound!
 
 ### What did you use them for?
 
-- Structuring and build a useable baseline for my 2nd and 3rd idea
+- Structuring and build a useable baseline for my 2nd and 3rd idea. I used it more to quickly visualize ideas to evolve my visions/ideas.
 
 ### How did you use them?
 
 - I first tried to make a mini game out of the data visualizatin and did everything myself again with a "player" rect that can jump and has a collision with the bars etc but then realized that it wasnt really the point of the project. I got carried away a bit because it was fun. 
-So i restarted and with so little time left i built structures for rows and columns (myself) of houses and added the csv file. I then asked AI to help me make the code clearer and implement things like the clock and gradient over the day and make the windows adjust to the csv file. I always asked to explain everything tho so I could change the parameters that I wanted to change.
-I especially used it to make it adjustable to the screen size all the time since i thought that was a cool feature and weve never done that without destroying everything ive already built. 
+- So i restarted and with so little time left i built structures for rows and columns (myself) of houses and added the csv file. I then wanted to show solarpanel energy that was implemented in Switzerland, so i changed the windows gradually so more light up when more energy was solar produced. I really dont think the visualization made sense for the data tho but i very much liked the Windows turning on, so I changed my approach once again: I wanted to visualize when people get home/ go to bed/ wake up! I then asked ChatGPT to take my already built code and help me quickly rearrange everything to make it happen.
+- I then asked AI to help me make the code clearer and implement things like the clock and gradient over the day and make the windows adjust to the csv file randomly since I could imagine that visually being way stronger. I always asked to explain everything tho so I could change the parameters that I wanted to change.
+I also used it to make it adjustable to the screen size all the time since i thought that was a cool feature and weve never done that without destroying everything ive already built. 
 SO basically I used it whenever I realized i needed to change x things to add a new idea to rebuild everything a little more simply.
 
 ### What was your own contribution?
 
-- everything was my idea, I never asked it for its creative input. I did use it a lot more for actual coding than in project 1 because I had a clear goal in mind and wanted to achieve certain things. I saw how much time it took me for project 1 to do everything myself sooooo work smarter not harder am i right ;) I build the house "looks" and shapes like sun/moon, implemented the file and arranged everything and always tried to understand what and how the AI did it.
+- everything was my idea, I never asked it for its creative input. I did use it a lot more for actual coding than in project 1 because I had clear goals in mind and wanted to achieve certain things. I saw how much time it took me for project 1 to do everything myself sooooo work smarter not harder am i right ;) I build the house "looks" and shapes like sun/moon, implemented the file and arranged everything and always tried to understand what and how the AI did it.
 
 ### Reflection
 
