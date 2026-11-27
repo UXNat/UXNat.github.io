@@ -10,6 +10,7 @@ let fontPath3 = "PlayfulTime-BLBB8.ttf";
 let fontPath4 = "RoughenCornerRegular-7RjV.ttf";
 
 let current_font = 1;
+let text_style_mode = "normal";
 
 let frame_counter = 0;
 let blinker_length = 2;
@@ -81,6 +82,8 @@ let previous_jumpscare = -1;
 
 let boo_hint_counter = 0;
 
+let italicOrBold_counter_hints= 0;
+
 function preload() {
     rickroll = loadSound("Voicy_Rickroll (1).mp3");
     jumpscare_img = loadImage("jumpscare.webp");
@@ -132,6 +135,44 @@ function draw() {
 
 
     let text_a = typed_letters.join("");
+
+
+    // TEXT STYLE COMMANDS
+    let lower_style_text = text_a.toLowerCase();
+
+    let italic_position = lower_style_text.lastIndexOf("italic");
+    let bold_position = lower_style_text.lastIndexOf("bold");
+    let normal_position = lower_style_text.lastIndexOf("normal");
+
+    let last_style_position = Math.max(
+        italic_position,
+        bold_position,
+        normal_position
+    );
+
+    // THE LAST TYPED COMMAND DETERMINES THE STYLE
+    if (last_style_position == italic_position && italic_position != -1) {
+        text_style_mode = "italic";
+         italicOrBold_counter_hints++
+    }
+    else if (last_style_position == bold_position && bold_position != -1) {
+        text_style_mode = "bold";
+         italicOrBold_counter_hints++
+    }
+    else if (last_style_position == normal_position && normal_position != -1) {
+        text_style_mode = "normal";
+    }
+
+    // APPLY STYLE TO ALL FONTS
+    if (text_style_mode == "italic") {
+        textStyle(ITALIC);
+    }
+    else if (text_style_mode == "bold") {
+        textStyle(BOLD);
+    }
+    else {
+        textStyle(NORMAL);
+    }
 
 
     // RICKROLL EASTER EGG
@@ -433,7 +474,7 @@ function draw() {
             jumpscare_active = false;
         }
     }
-        
+
 
 
 
@@ -475,7 +516,7 @@ function draw() {
     }
 
     // WRITE COLOR
-    if (frame_counter >= 45 && color_changed >= 1 && color_changed < 2) {
+    if (frame_counter >= 45 && color_changed >= 1 && color_changed < 250  ) {
 
         fill(255, 0, 0)
         textSize(typed_size / 1.5);
@@ -483,9 +524,17 @@ function draw() {
 
     }
 
+    // ITALIC BOLD
+    if (frame_counter >= 65 && italicOrBold_counter_hints < 1) {
+
+        fill(255, 0, 0)
+        textSize(typed_size / 1.5);
+        text("what else can you do with fonts?", 0, 5 * typed_size + 10);
+
+    }
 
     // MAKE BIGGER/SMALLER
-    if (frame_counter >= 60 && size_counter < 1) {
+    if (frame_counter >= 70 && size_counter < 1) {
 
         fill(255, 0, 0)
         textSize(typed_size / 1.5);
@@ -493,12 +542,15 @@ function draw() {
 
     }
 
+    
+
+
     // ENTER
-    if (frame_counter >= 75 && enter_counter_hints < 1) {
+    if (frame_counter >= 80 && enter_counter_hints < 1) {
 
         fill(255, 0, 0)
         textSize(typed_size / 1.5);
-        text("ENTER", 0, 5 * typed_size + 10);
+        text("press ENTER", 0, 5 * typed_size + 10);
 
     }
 
@@ -550,6 +602,17 @@ function keyTyped() {
     }
     else if (current_font == 4) {
         textFont(font4);
+    }
+
+    // APPLY CURRENT TEXT STYLE
+    if (text_style_mode == "italic") {
+        textStyle(ITALIC);
+    }
+    else if (text_style_mode == "bold") {
+        textStyle(BOLD);
+    }
+    else {
+        textStyle(NORMAL);
     }
 
     textSize(typed_size);

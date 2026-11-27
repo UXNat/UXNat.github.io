@@ -19,26 +19,27 @@ Be honest and specific.
 
 <!-- Where did AI help? Ideas, writing/debugging code, creating visual or audio assets, explaining a concept, refactoring, … -->
 
-- helping/fixing mistakes
+- helping/fixing mistakes for coding
 
 ### How did you use them?
 
 <!-- Include the key prompts you used, or a short summary of the back-and-forth. Be specific enough that someone could follow your process. -->
 
-- for this project I purely used it to explain some new functions like lastIndexOf() and Math.max/min so I can use them in my code, but I tried to code everything myself. When I did mistakes or the code didnt work, I asked it to explain why and help, not writing any code for me. My focus here was to really code myself and use what we learned.
-I did use it later to redefine when it should do something based on what was typed for lower/upper case letters, so that Blue, blue, BLUE, etc. would all trigger it.
+- for this project I purely used it to explain some new functions like lastIndexOf() and Math.max/min so I can use them in my code, but I tried to code everything myself. When I did mistakes or the code didnt work, I asked it to explain why and help, not writing any code for me. My focus here was to really code myself and use what we learned. 
+I mostly needed help for the checks for the easter egg, sometimes i put it in the wrong spot or couldn't figure out how to make it happen only once when it its the draw event instead of x-times/sec.
+I also asked it for hekp to implement sound!
 
 ### What was your own contribution?
 
 <!-- What did YOU decide, change, reject, or build on top of the AI's output? Which creative and technical choices were yours? -->
 
-- everything! I didnt ask AI for any ideas or pure code. It suggested functions i didnt know of before to make my idead possible and simply explained them so I knew how to use them.
+- everything! I didnt ask AI for any ideas or pure code. It suggested functions i didnt know of before to make my ideas possible and simply explained them so I knew how to use them.
 
 ### Reflection
 
 <!-- One or two sentences: what worked well, what didn't, and what you learned about using AI as a creative tool. -->
 
-- it worked amazing at explaining/ finding mistakes in such a simple code. it quickly understood how much i already knew and what i could use (that was also simple to use) to help guide me in the right direction. 
+- it worked amazing at explaining/ finding mistakes in such a simple code. it quickly understood how much i already knew and what i could use (that was also simple to use) to help guide me in the right direction. It also gave me ideas to structure my code differently; i never realized we could do "absätze" between lines and it would work too! sometimes that really helped to keep a good overview. 
 
 
 ## Project 2
