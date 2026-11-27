@@ -532,44 +532,46 @@ function draw() {
 
         fill(255, 0, 0)
         textSize(typed_size / 1.5);
-        text("the sky is...", 0, 3 * typed_size + 10);
+        text("whats your favorite color?", 0, 3 * typed_size + 10);
 
     }
+
+
 
     // ITALIC BOLD
     if (frame_counter >= 65 && italicOrBold_counter_hints < 1) {
 
         fill(255, 0, 0)
         textSize(typed_size / 1.5);
-        text("what else can you do with fonts?", 0, 5 * typed_size + 10);
+        text("what else can you do with fonts?", 0, 4 * typed_size + 10);
 
     }
 
     // MAKE BIGGER/SMALLER
-    if (frame_counter >= 70 && size_counter < 1) {
+    if (frame_counter >= 75 && size_counter < 1) {
 
         fill(255, 0, 0)
         textSize(typed_size / 1.5);
-        text("your grandma cant read this, its too SMALL", 0, 4 * typed_size + 10);
+        text("your grandma cant read this, its too SMALL", 0, 5 * typed_size + 10);
 
     }
 
     
     // ENTER
-    if (frame_counter >= 80 && enter_counter_hints < 1) {
+    if (frame_counter >= 90 && enter_counter_hints < 1) {
 
         fill(255, 0, 0)
         textSize(typed_size / 1.5);
-        text("press ENTER", 0, 5 * typed_size + 10);
+        text("press ENTER!", 0, 6 * typed_size + 10);
 
     }
 
     // ENTER
-    if (frame_counter >= 110 && rickroll_counter_hint < 1) {
+    if (frame_counter >= 120 && rickroll_counter_hint < 1) {
 
         fill(255, 0, 0)
         textSize(typed_size / 1.5);
-        text("'im never gonna...'", 0, 6 * typed_size + 10);
+        text("'im never gonna...'", 0, 7 * typed_size + 10);
 
     }
 
@@ -579,7 +581,7 @@ function draw() {
 
         fill(255, 0, 0)
         textSize(typed_size / 1.5);
-        text("whats the best meme on earth?", 0, 7 * typed_size + 10);
+        text("whats the best meme on earth?", 0, 8 * typed_size + 10);
 
     }
 
@@ -589,7 +591,7 @@ function draw() {
 
         fill(255, 0, 0)
         textSize(typed_size / 1.5);
-        text("scare me.", 0, 7 * typed_size + 10);
+        text("scare me.", 0, 9 * typed_size + 10);
 
     }
 
