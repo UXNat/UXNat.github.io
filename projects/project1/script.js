@@ -495,7 +495,7 @@ function draw() {
     // EASTER EGGS COUNTER
     textSize(typed_size);
 
-    text(`easter eggs collected: ${easter_eggs}/18`, 0, typed_size);
+    text(`changes/effects collected: ${easter_eggs}/18`, 0, typed_size);
 
 
     if (click_discovered == 1 && !click_counted) {
